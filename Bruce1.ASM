@@ -2539,7 +2539,7 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 .ClearPalette
 {
-        RTS     ;SEI
+        RTS     ;SEI ; NB Temp ignore ClearPalette to see screen redraw
         LDX     #$0F
 .loop
         LDA     L17E9,X
