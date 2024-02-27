@@ -41,12 +41,12 @@ L0011   = $0011
 L0012   = $0012
 L0013   = $0013
 L0014   = $0014
-L0015   = $0015
-L0016   = $0016
-L0017   = $0017
-L0018   = $0018
-L0019   = $0019
-L001A   = $001A
+Score1          = $0015
+Score2          = $0016
+Score3          = $0017
+HighScore1      = $0018
+HighScore2      = $0019
+HighScore3      = $001A
 L001B   = $001B
 L001C   = $001C
 L001D   = $001D
@@ -71,7 +71,7 @@ L0031   = $0031
 L0032   = $0032
 L0033   = $0033
 L0034   = $0034
-L0035   = $0035
+soundFlag       = $0035
 L0045   = $0045
 L0046   = $0046
 L0047   = $0047
@@ -159,9 +159,9 @@ L0386   = $0386
 
         BNE     L0926
 
-        LDA     L0035
+        LDA     soundFlag
         EOR     #$F1
-        STA     L0035
+        STA     soundFlag
 .L0926
         LDA     #$0A
         JSR     L0BEB           ; [ESCAPE] Exit game?
@@ -921,7 +921,7 @@ L0386   = $0386
         LDA     L0014
         BEQ     L0DC8
 
-        LDA     L0035
+        LDA     soundFlag
         BEQ     L0DC8
 
         LDA     #$06
@@ -1962,7 +1962,7 @@ L119C = L119A+2
         BNE     L13FA
 
 .L13B0
-        LDA     L0035
+        LDA     soundFlag
         BEQ     L13BD
 
         LDA     #$07
@@ -1991,20 +1991,22 @@ L119C = L119A+2
 
         DEC     L001B
         JMP     L1AFC
+        ; return
 
-.L13E1
+.L13E1  ; Knock down green ninja 75 score
         SED
         LDA     L007F
         CMP     #$04
         BEQ     L13F6
 
         CLC
-        LDA     L0015
+        LDA     Score1
         ADC     #$75
-        STA     L0015
-        LDA     L0016
+        STA     Score1
+        LDA     Score2
         ADC     #$00
         JMP     L18CE
+        ; return
 
 .L13F6
         CLC
@@ -2340,7 +2342,7 @@ L119C = L119A+2
         EQUB    $00,$00,$00,$00,$00,$00,$00,$00
         EQUB    $00,$01,$05,$D2,$16,$00,$80,$06
 
-.L15C3
+.L15C3  ; Initilase game data?
         LDA     #$FF
         STA     L0031
         LDA     #$04
@@ -2351,11 +2353,12 @@ L119C = L119A+2
         STA     L0012
         STA     L0011
         STA     L0029
+
         LDY     #$0B
         STY     L0013
         STY     L0033
 .L15DD
-        STA     L1BD9,Y
+        STA     L1BD9,Y         ; reset some data to 0 
         DEY
         BPL     L15DD
 
@@ -2371,10 +2374,9 @@ L119C = L119A+2
         STA     L0033
         STA     L0013
         JSR     L1ACE
-
         JSR     L1AFC
-
         JMP     L1576
+        ; return
 
 .L15FD
         LDA     #$00
@@ -2407,7 +2409,14 @@ L119C = L119A+2
         STA     L007C
         RTS
 
-.L162E
+;-------------------------------------------------------------------------
+; CalcAddress ???
+;-------------------------------------------------------------------------
+; On entry  : X and Y contain character position
+; On exit   : A,X and Y are undefined  
+;-------------------------------------------------------------------------
+.CalcAddress
+{
         LDA     L000D
         CMP     #$A0
         BCC     L1656
@@ -2478,6 +2487,8 @@ L119C = L119A+2
         ADC     L007C
         STA     L0001
         RTS
+}
+;-------------------------------------------------------------------------
 
         EQUB    $01
 
@@ -2495,37 +2506,53 @@ L119C = L119A+2
         EQUB    $90,$0F,$2D,$05,$1A,$9C,$91,$2D
         EQUB    $08,$0E,$7E
 
-.L1704
+;-------------------------------------------------------------------------
+; ClearScreen
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.ClearScreen    ; clear from $3A00 - $7FFF
+{
         LDA     #$39
         STA     L007C
         LDA     #$80
         STA     L007B
+
         LDX     #$47
         LDY     #$80
-.L1710
+.loop
         STA     (L007B),Y
         INY
-        BNE     L1710
+        BNE     loop
 
         INC     L007C
         DEX
-        BNE     L1710
-
+        BNE     loop
         RTS
-
-.L171B
-        SEI
+}
+;-------------------------------------------------------------------------
+; Clear Palette
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.ClearPalette
+{
+        RTS     ;SEI
         LDX     #$0F
-.L171E
+.loop
         LDA     L17E9,X
         AND     #$F0
         ORA     #$07
         STA     ulaPalette
         DEX
-        BPL     L171E
+        BPL     loop
 
         CLI
         RTS
+}
+;-------------------------------------------------------------------------
 
 .L172D
         SEI
@@ -2537,6 +2564,8 @@ L119C = L119A+2
         LDA     L1740,X
         STA     L007C
         JMP     (L007B)
+        ; return
+;-------------------------------------------------------------------------
 
 .L173F
         EQUB    $5C
@@ -2577,6 +2606,8 @@ L119C = L119A+2
 
 .L17F8
         EQUB    $F3
+
+;-------------------------------------------------------------------------
 
 .L17F9
         SEI
@@ -2656,11 +2687,12 @@ L119C = L119A+2
 .L1865
         CLI
         RTS
+;-------------------------------------------------------------------------
 
-.L1867
-        EQUB    $A7
+.L1867  ; Palette data
+        EQUB    $A7,$A0,$B0,$C0,$C7,$B7
 
-        EQUB    $A0,$B0,$C0,$C7,$B7
+;-------------------------------------------------------------------------
 
 .L186D
         LDA     L0013
@@ -2703,7 +2735,7 @@ L119C = L119A+2
 
         TYA
         PHA
-        JSR     L162E
+        JSR     CalcAddress
 
         LDA     #$11
         JSR     L1FAE
@@ -2727,46 +2759,48 @@ L119C = L119A+2
         INY
         BNE     L18B4
 
-.L18C2
+.L18C2  ; Lantern score 125
         SED
         CLC
-        LDA     L0015
+        LDA     Score1
         ADC     #$25
-        STA     L0015
+        STA     Score1
 .L18CA
-        LDA     L0016
+        LDA     Score2
         ADC     #$01
 .L18CE
-        STA     L0016
+        STA     Score2
         TAX
-        LDA     L0017
+        LDA     Score3
         ADC     #$00
-        STA     L0017
+        STA     Score3
         TAY
         CLD
-        CMP     L001A
+        CMP     HighScore3
         BCC     L18EB
 
         BNE     L18EE
 
-        CPX     L0019
+        CPX     HighScore2
         BCC     L18EB
 
         BNE     L18EE
 
-        LDA     L0015
-        CMP     L0018
+        LDA     Score1
+        CMP     HighScore1
         BCS     L18EE
 
 .L18EB
         JMP     L1ACE
-
+        ; return
+        
 .L18EE
-        LDA     L0015
-        STA     L0018
-        STX     L0019
-        STY     L001A
+        LDA     Score1
+        STA     HighScore1
+        STX     HighScore2
+        STY     HighScore3
         JMP     L1ACE
+        ; return
 
 .L18F9
         SEC
@@ -2808,7 +2842,7 @@ L119C = L119A+2
         STA     L000E
         JSR     L1B21
 
-        JSR     L162E
+        JSR     CalcAddress
 
         LDA     L000D
         STA     L0004
@@ -2894,26 +2928,26 @@ L119C = L119A+2
         STA     L0000
         LDA     #$37
         STA     L0001
-        LDA     L0017
+        LDA     Score3
         JSR     L1B06
 
-        LDA     L0016
+        LDA     Score2
         JSR     L1B06
 
-        LDA     L0015
+        LDA     Score1
         JSR     L1B06
 
         LDA     #$C0
         STA     L0000
         LDA     #$38
         STA     L0001
-        LDA     L001A
+        LDA     HighScore3
         JSR     L1B06
 
-        LDA     L0019
+        LDA     HighScore2
         JSR     L1B06
 
-        LDA     L0018
+        LDA     HighScore1
         JMP     L1B06
 
 .L1AFC
@@ -2969,7 +3003,7 @@ L119C = L119A+2
         LDA     L0080
         STA     L0004
         STA     L0091
-        JSR     L162E
+        JSR     CalcAddress
 
         LDA     L0000
         STA     L0082
@@ -3073,10 +3107,8 @@ L119C = L119A+2
         RTS
 
 .L1BD9
-        EQUB    $00
-
         EQUB    $00,$00,$00,$00,$00,$00,$00,$00
-        EQUB    $00,$00,$00
+        EQUB    $00,$00,$00,$00
 
 .L1BE5
         LDA     L0031
@@ -3092,7 +3124,7 @@ L119C = L119A+2
         STA     L1BD9,X
         SED
         CLC
-        LDA     L0016
+        LDA     Score2
         ADC     #$20
         JSR     L18CE
 
@@ -3124,9 +3156,9 @@ L119C = L119A+2
 
         LDA     #$00
         STA     L0020
-        JSR     L171B
 
-        JSR     L1704
+        JSR     ClearPalette
+        JSR     ClearScreen
 
         LDA     L0013
         CMP     #$05
@@ -3153,12 +3185,10 @@ L119C = L119A+2
         STA     L000F
         LDA     L20B1,X
         STA     L0010
+
         JSR     L1C67
-
         JSR     L1883
-
         JSR     L172D
-
         JMP     L194B
 
 .L1C67
@@ -3167,7 +3197,6 @@ L119C = L119A+2
         INY
         CMP     #$F3
         BNE     L1C71
-
         RTS
 
 .L1C71
@@ -3183,7 +3212,7 @@ L119C = L119A+2
         STA     L001E
         LDA     (L000F),Y
         STA     L001D
-        JSR     L162E
+        JSR     CalcAddress
 
 .L1C89
         LDA     L0013
@@ -3248,7 +3277,7 @@ L119C = L119A+2
         LDA     L000E
         ADC     L000C
         STA     L000E
-        JSR     L162E
+        JSR     CalcAddress
 
         JMP     L1C89
 
@@ -3489,7 +3518,7 @@ L119C = L119A+2
         STY     L007E
         JSR     L1E65
 
-        JSR     L162E
+        JSR     CalcAddress
 
         LDX     L007D
         LDY     L007E
@@ -3676,7 +3705,6 @@ L119C = L119A+2
         JSR     L1105
 
         JSR     L1D68
-
         JSR     L0955
 
 .L1F50  ; Loop to handle waiting for SPACE bar to play game
@@ -3706,9 +3734,9 @@ L119C = L119A+2
 
 .L1F73  ; Start Game
         LDA     #$00
-        STA     L0015
-        STA     L0016
-        STA     L0017
+        STA     Score1
+        STA     Score2
+        STA     Score3
         JSR     L1ACE
 
         LDA     #$96
@@ -3731,6 +3759,12 @@ L119C = L119A+2
         EQUB    $00,$00,$00,$00,$00,$00,$00,$00
         EQUB    $00,$00,$01,$05,$D2,$16,$00
 
+;-------------------------------------------------------------------------
+; 
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L1FAE
         STA     L007B
         TAX
@@ -3777,8 +3811,8 @@ L119C = L119A+2
         BEQ     L1FFD
 
         JSR     L1141
-
         JMP     L2000
+        ; return
 
 .L1FFD
         JSR     L116B
@@ -3789,6 +3823,7 @@ L119C = L119A+2
         PLA
         STA     L0097
         RTS
+;-------------------------------------------------------------------------
 
 .L2007
         JSR     L15FD
@@ -3839,6 +3874,7 @@ L119C = L119A+2
 
         SBC     #$03
         JMP     L202D
+        ; return
 
 .L2048
         CMP     #$27
@@ -3849,6 +3885,7 @@ L119C = L119A+2
 
         SBC     #$25
         JMP     L202D
+        ; return
 
 .L2055
         CMP     #$2D
@@ -3921,8 +3958,8 @@ L119C = L119A+2
 
 .L20AA
         JSR     L18F9
-
         JMP     L2072
+        ; return
 
         ; Sprite Data Below ?
 .L20B0
@@ -4883,18 +4920,18 @@ L119C = L119A+2
         BPL     L4BAE
 
         LDA     #$14
-        STA     ulaMode
+        STA     ulaMode         ; Mode 2
         CLI
         LDA     #$00
-        STA     L0018
-        STA     L0019
-        STA     L001A
-        STA     L0015
-        STA     L0016
-        STA     L0017
+        STA     HighScore1           ; HiScore
+        STA     HighScore2           
+        STA     HighScore3
+        STA     Score1           ; Score
+        STA     Score2           ; Score
+        STA     Score3           ; Score
         STA     L0034
         LDA     #$F1
-        STA     L0035
+        STA     soundFlag
 
         LDA     #$08
         LDX     #$EE
