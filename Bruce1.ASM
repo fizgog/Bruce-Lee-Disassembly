@@ -39,15 +39,15 @@ L000F   = $000F
 L0010   = $0010
 L0011   = $0011
 L0012   = $0012
-L0013   = $0013
+room_number     = $0013
 L0014   = $0014
-Score1          = $0015
-Score2          = $0016
-Score3          = $0017
-HighScore1      = $0018
-HighScore2      = $0019
-HighScore3      = $001A
-L001B   = $001B
+score1          = $0015
+score2          = $0016
+score3          = $0017
+highscore1      = $0018
+highscore2      = $0019
+highscore3      = $001A
+lives           = $001B
 L001C   = $001C
 L001D   = $001D
 L001E   = $001E
@@ -71,7 +71,7 @@ L0031   = $0031
 L0032   = $0032
 L0033   = $0033
 L0034   = $0034
-soundFlag       = $0035
+sound_flag       = $0035
 L0045   = $0045
 L0046   = $0046
 L0047   = $0047
@@ -136,37 +136,37 @@ L0386   = $0386
 
         ORG     NATIVE_ADDR
 .L0900
-        JSR     L1F3A
+        JSR     AttractMode
         JMP     L0955
         ; return
 
-.L0906
+.L0906  ; Game started
         LDX     #$00
         TXS
         STX     L0022
-        LDA     #$07
-        JSR     L0BEB           ; Freeze Game
+        LDA     #$07            ; Freeze Game
+        JSR     ReadKey           
 
         BNE     L0919
 
 .L0912
-        LDA     #$08
-        JSR     L0BEB           ; Restart Game
+        LDA     #$08            ; Restart Game
+        JSR     ReadKey           
 
         BNE     L0912
 
 .L0919
-        LDA     #$06
-        JSR     L0BEB           ; Toggle Sound
+        LDA     #$06            ; Toggle Sound
+        JSR     ReadKey           
 
         BNE     L0926
 
-        LDA     soundFlag
+        LDA     sound_flag
         EOR     #$F1
-        STA     soundFlag
+        STA     sound_flag
 .L0926
-        LDA     #$0A
-        JSR     L0BEB           ; [ESCAPE] Exit game?
+        LDA     #$0A            ; [ESCAPE] Exit game?
+        JSR     ReadKey           
 
         BEQ     L0900           ; Quit Game
 
@@ -193,7 +193,7 @@ L0386   = $0386
         LDA     L0022
         BEQ     L0972
 
-.L0955
+.L0955 
         JSR     L1BE5
 
         LDA     L0031
@@ -216,15 +216,15 @@ L0386   = $0386
 .L0975
         JSR     L17F9
 
-        LDA     L0013
+        LDA     room_number
         CMP     #$09
-        BEQ     L0989
+        BEQ     L0989           ; room 10
 
         CMP     #$07
-        BEQ     L0989
+        BEQ     L0989           ; room 6
 
         CMP     #$04
-        BEQ     L0989
+        BEQ     L0989           ; room 3
 
         JSR     L1DDE
 
@@ -232,8 +232,8 @@ L0386   = $0386
         LDA     L0012
         BEQ     L09A1
 
-        DEC     L001B
-        JSR     L1AFC
+        DEC     lives
+        JSR     DrawLives
 
         JSR     L1105
 
@@ -334,8 +334,8 @@ L0386   = $0386
         LDA     L0014
         BEQ     L0A22
 
-        LDA     #$02
-        JSR     L0BEB           ; Up Key
+        LDA     #$02            ; Up Key
+        JSR     ReadKey           
 
         BNE     L0A29
 
@@ -451,8 +451,8 @@ L0386   = $0386
         LDA     L0089
         BEQ     L0AA5
 
-        LDA     #$05
-        JSR     L0BEB           ; Down Key
+        LDA     #$05            ; Down Key
+        JSR     ReadKey           
 
         BNE     L0AC6
 
@@ -676,7 +676,7 @@ L0386   = $0386
         LDY     #$28
         JSR     L0386
 
-        LDA     L001B
+        LDA     lives
         BEQ     L0BD1
 
         JMP     L1D68
@@ -703,10 +703,16 @@ L0386   = $0386
         STA     L0080
         RTS
 
-.L0BEB
+;-------------------------------------------------------------------------
+; ReadKey
+;-------------------------------------------------------------------------
+; On entry  : Y = index into KeyArray
+; On exit   : A is preserved
+;-------------------------------------------------------------------------
+.ReadKey
         PHA
         TAY
-        LDX     L0070,Y
+        LDX     L0070,Y         
         LDY     #$FF
         LDA     #$81
         JSR     OSBYTE          ; OSBYTE 129 - Read key within time limit.
@@ -714,6 +720,7 @@ L0386   = $0386
         PLA
         CPX     #$FF
         RTS
+;-------------------------------------------------------------------------
 
 .L0BFA
         LDA     L0096
@@ -731,8 +738,9 @@ L0386   = $0386
         STA     L007C
         JMP     (L007B)
         ; return
+;-------------------------------------------------------------------------
 
-.L0C13
+.L0C13  ; DATA
         EQUB    $23
 
 .L0C14
@@ -929,7 +937,7 @@ L0386   = $0386
         LDA     L0014
         BEQ     L0DC8
 
-        LDA     soundFlag
+        LDA     sound_flag
         BEQ     L0DC8
 
         LDA     #$06
@@ -971,7 +979,7 @@ L0386   = $0386
         ; return
 
 .L0E04
-        DEC     L0013
+        DEC     room_number
         CLC
         LDA     L0080
         ADC     #$4B
@@ -979,8 +987,8 @@ L0386   = $0386
         LDA     L008C
         ADC     #$4B
         STA     L008C
-        LDX     L0013
-        CPX     #$04
+        LDX     room_number
+        CPX     #$04            ; room 3
         BNE     L0E26
 
         SEC
@@ -1104,7 +1112,7 @@ L0386   = $0386
         ; return
 
 .L0EB5
-        INC     L0013
+        INC     room_number
         SEC
         LDA     L0080
         SBC     #$4C
@@ -1112,8 +1120,8 @@ L0386   = $0386
         LDA     L008C
         SBC     #$4C
         STA     L008C
-        LDX     L0013
-        CPX     #$05
+        LDX     room_number
+        CPX     #$05            ; room 3
         BNE     L0ED7
 
         CLC
@@ -1164,6 +1172,7 @@ L0386   = $0386
 .L0F0E
         JMP     L0E5B
         ; return
+
         ; Should never get here!
         LDA     #$FF
         RTS
@@ -1254,9 +1263,9 @@ L0386   = $0386
         SBC     #$C2
         STA     L008D
         CLC
-        LDA     L0013
-        ADC     #$04
-        STA     L0013
+        LDA     room_number
+        ADC     #$04                    ; add 4 to room number 
+        STA     room_number
         JMP     L1041
         ; return
 
@@ -1365,9 +1374,9 @@ L0386   = $0386
 
 .L1019
         SEC
-        LDA     L0013
+        LDA     room_number
         SBC     #$04
-        STA     L0013
+        STA     room_number
         CMP     #$06
         BNE     L1034
 
@@ -1569,6 +1578,12 @@ L0386   = $0386
         JMP     L116D
         ; return
 
+;-------------------------------------------------------------------------
+; ???
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L1159
         LDX     #$00
         LDY     #$00
@@ -1580,6 +1595,7 @@ L0386   = $0386
         SBC     L000A
         STA     L007C
         RTS
+;-------------------------------------------------------------------------
 
 .L116B
         LDA     #$FF
@@ -1899,7 +1915,14 @@ L119C = L119A+2
         PLA
         RTS
 
+;-------------------------------------------------------------------------
+; 
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L1324
+{
         CLC
         ADC     #$29
         LSR     A
@@ -1907,7 +1930,7 @@ L119C = L119A+2
         LSR     A
         LSR     A
         TAX
-.L132C
+.loop
         LDA     #$C5
         STA     LFE4C
         LDA     #$E5
@@ -1918,15 +1941,17 @@ L119C = L119A+2
         SEC
         SBC     #$06
         CMP     L1347,X
-        BCC     L132C
-
+        BCC     loop
         RTS
+}
+;-------------------------------------------------------------------------
 
-.L1347
-        EQUB    $00
+.L1347  ; DATA
+        ;EQUB    $01,$01,$01,$01,$01,$01,$01,$01
+        ;EQUB    $01,$01,$01,$01,$01,$01,$01,$01
 
-        EQUB    $01,$01,$02,$03,$03,$04,$04,$05
-        EQUB    $06,$06,$07,$08,$08,$09,$09
+        EQUB    $00,$01,$01,$02,$03,$03,$04,$04
+        EQUB    $05,$06,$06,$07,$08,$08,$09,$09
 
 .L1357
         LDX     #$00
@@ -1987,7 +2012,7 @@ L119C = L119A+2
         BNE     L13FA
 
 .L13B0
-        LDA     soundFlag
+        LDA     sound_flag
         BEQ     L13BD
 
         LDA     #$07
@@ -2014,8 +2039,8 @@ L119C = L119A+2
         CMP     #$03
         BCC     L13FA
 
-        DEC     L001B
-        JMP     L1AFC
+        DEC     lives
+        JMP     DrawLives
         ; return
 
 .L13E1  ; Knock down green ninja 75 score
@@ -2025,10 +2050,10 @@ L119C = L119A+2
         BEQ     L13F6
 
         CLC
-        LDA     Score1
+        LDA     score1
         ADC     #$75
-        STA     Score1
-        LDA     Score2
+        STA     score1
+        LDA     score2
         ADC     #$00
         JMP     L18CE
         ; return
@@ -2149,7 +2174,7 @@ L119C = L119A+2
         ; return
 
 .L148D
-        LDA     L0013
+        LDA     room_number
         CMP     #$04
         BNE     L14A0
 
@@ -2271,7 +2296,7 @@ L119C = L119A+2
         STA     L0089
         LDA     #$00
         STA     L0096
-        LDA     L0013
+        LDA     room_number
         CMP     #$09
         BCS     L1575
 
@@ -2296,7 +2321,7 @@ L119C = L119A+2
         DEX
         BNE     L1575
 
-        LDA     L0013
+        LDA     room_number
         ASL     A
         STA     L007B
         ASL     A
@@ -2340,6 +2365,7 @@ L119C = L119A+2
         LDA     #$01
         JMP     OSWORD          ; OSWORD 1 - Read system clock.
         ; return
+
 ;-------------------------------------------------------------------------
 ; RandomNumber
 ;-------------------------------------------------------------------------
@@ -2388,7 +2414,7 @@ L119C = L119A+2
         LDA     #$FF
         STA     L0031
         LDA     #$04
-        STA     L001B
+        STA     lives
         LDA     #$00
         STA     L0026
         STA     L0030
@@ -2397,7 +2423,7 @@ L119C = L119A+2
         STA     L0029
 
         LDY     #$0B
-        STY     L0013
+        STY     room_number
         STY     L0033
 .L15DD
         STA     L1BD9,Y         ; reset some data to 0 
@@ -2409,14 +2435,14 @@ L119C = L119A+2
 .L15E7
         JSR     L1883
 
-        DEC     L0013
+        DEC     room_number
         BPL     L15E7
 
         LDA     #$00
         STA     L0033
-        STA     L0013
-        JSR     L1ACE
-        JSR     L1AFC
+        STA     room_number
+        JSR     DrawScoreandHighscore
+        JSR     DrawLives
         JMP     ReadSystemClock
         ; return
 
@@ -2581,7 +2607,7 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 .ClearPalette
 {
-        RTS     ;SEI
+        RTS     ;SEI    ; NB Altered to see screen redrawing
         LDX     #$0F
 .loop
         LDA     L17E9,X
@@ -2598,7 +2624,7 @@ L119C = L119A+2
 
 .L172D
         SEI
-        LDA     L0013
+        LDA     room_number
         ASL     A
         TAX
         LDA     L173F,X
@@ -2658,7 +2684,7 @@ L119C = L119A+2
 
         LDA     #$03
         STA     L0025
-        LDA     L0013
+        LDA     room_number
         CMP     #$05
         BEQ     L1818
 
@@ -2737,7 +2763,7 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 
 .L186D
-        LDA     L0013
+        LDA     room_number
         ASL     A
         STA     L007D
         ASL     A
@@ -2804,44 +2830,44 @@ L119C = L119A+2
 .L18C2  ; Lantern score 125
         SED
         CLC
-        LDA     Score1
+        LDA     score1
         ADC     #$25
-        STA     Score1
+        STA     score1
 .L18CA
-        LDA     Score2
+        LDA     score2
         ADC     #$01
 .L18CE
-        STA     Score2
+        STA     score2
         TAX
-        LDA     Score3
+        LDA     score3
         ADC     #$00
-        STA     Score3
+        STA     score3
         TAY
         CLD
-        CMP     HighScore3
+        CMP     highscore3
         BCC     L18EB
 
         BNE     L18EE
 
-        CPX     HighScore2
+        CPX     highscore2
         BCC     L18EB
 
         BNE     L18EE
 
-        LDA     Score1
-        CMP     HighScore1
+        LDA     score1
+        CMP     highscore1
         BCS     L18EE
 
 .L18EB
-        JMP     L1ACE
+        JMP     DrawScoreandHighscore
         ; return
 
 .L18EE
-        LDA     Score1
-        STA     HighScore1
-        STX     HighScore2
-        STY     HighScore3
-        JMP     L1ACE
+        LDA     score1
+        STA     highscore1
+        STX     highscore2
+        STY     highscore3
+        JMP     DrawScoreandHighscore
         ; return
 
 .L18F9
@@ -2904,7 +2930,7 @@ L119C = L119A+2
 
 .L194B
         SEI
-        LDA     L0013
+        LDA     room_number
         ASL     A
         TAX
         LDA     L1960,X
@@ -2967,41 +2993,61 @@ L119C = L119A+2
         EQUB    $8D,$21,$FE,$A9,$F7,$8D,$F8,$17
         EQUB    $8D,$21,$FE,$58,$60
 
-.L1ACE
+;-------------------------------------------------------------------------
+; DrawScoreandHighscore
+;-------------------------------------------------------------------------
+; On entry  :
+; On exit   : 
+;-------------------------------------------------------------------------
+.DrawScoreandHighscore
         LDA     #$C8
         STA     L0000
-        LDA     #$37
+        LDA     #$37            ; $37C8
         STA     L0001
-        LDA     Score3
-        JSR     L1B06
+        LDA     score3
+        JSR     DrawNumbers
 
-        LDA     Score2
-        JSR     L1B06
+        LDA     score2
+        JSR     DrawNumbers
 
-        LDA     Score1
-        JSR     L1B06
+        LDA     score1
+        JSR     DrawNumbers
 
         LDA     #$C0
         STA     L0000
-        LDA     #$38
+        LDA     #$38            ; $38C0
         STA     L0001
-        LDA     HighScore3
-        JSR     L1B06
+        LDA     highscore3
+        JSR     DrawNumbers
 
-        LDA     HighScore2
-        JSR     L1B06
+        LDA     highscore2
+        JSR     DrawNumbers
 
-        LDA     HighScore1
-        JMP     L1B06
+        LDA     highscore1
+        JMP     DrawNumbers
         ; return
 
-.L1AFC
+;-------------------------------------------------------------------------
+; DrawLives
+;-------------------------------------------------------------------------
+; On entry  :
+; On exit   : 
+;-------------------------------------------------------------------------
+.DrawLives
         LDA     #$E0
         STA     L0000
         LDA     #$39
-        STA     L0001
-        LDA     L001B
-.L1B06
+        STA     L0001           ; $39E0
+        LDA     lives
+        ; drop through
+
+;-------------------------------------------------------------------------
+; DrawNumbers
+;-------------------------------------------------------------------------
+; On entry  :
+; On exit   : 
+;-------------------------------------------------------------------------
+.DrawNumbers
         PHA
         LDA     #$00
         STA     L0004
@@ -3020,8 +3066,8 @@ L119C = L119A+2
         CLC
         ADC     #$14
         JSR     L1FAE
-
         RTS
+;-------------------------------------------------------------------------
 
 .L1B21
         LDA     L0097
@@ -3172,7 +3218,7 @@ L119C = L119A+2
         LDA     L0031
         BNE     L1C00
 
-        LDX     L0013
+        LDX     room_number
         BEQ     L1C00
 
         LDA     L1BD9,X
@@ -3182,7 +3228,7 @@ L119C = L119A+2
         STA     L1BD9,X
         SED
         CLC
-        LDA     Score2
+        LDA     score2
         ADC     #$20
         JSR     L18CE
 
@@ -3218,7 +3264,7 @@ L119C = L119A+2
         JSR     ClearPalette
         JSR     ClearScreen
 
-        LDA     L0013
+        LDA     room_number
         CMP     #$05
         BNE     L1C47
 
@@ -3232,7 +3278,7 @@ L119C = L119A+2
         JSR     L1C67
 
 .L1C47
-        LDA     L0013
+        LDA     room_number
         ASL     A
         STA     L007B
         ASL     A
@@ -3274,7 +3320,7 @@ L119C = L119A+2
         JSR     CalcAddress
 
 .L1C89
-        LDA     L0013
+        LDA     room_number
         CMP     #$05
         BNE     L1CA5
 
@@ -3451,17 +3497,17 @@ L119C = L119A+2
         LDA     #$00
         STA     L0089
         STA     L0096
-        LDA     L0013
+        LDA     room_number
         CMP     #$0A
         BNE     L1D80
 
-        LDA     L0013
+        LDA     room_number
         LDX     L0081
         CPX     #$BE
         BCC     L1D80
 
         LDA     #$09
-        STA     L0013
+        STA     room_number
 .L1D80
         ASL     A
         ASL     A
@@ -3498,7 +3544,7 @@ L119C = L119A+2
 ; On exit   : 
 ;-------------------------------------------------------------------------
 .L1DCA
-        LDA     L0013
+        LDA     room_number
         ASL     A
         TAX
         LDA     L2714,X
@@ -3513,6 +3559,7 @@ L119C = L119A+2
 .L1DDC
         PLA
         RTS
+;-------------------------------------------------------------------------
 
 .L1DDE
         JSR     L1105
@@ -3691,7 +3738,7 @@ L119C = L119A+2
         JSR     L186D
 
         LDX     #$01
-        LDA     L0013
+        LDA     room_number
         CMP     #$08
         BNE     L1EF7
 
@@ -3761,9 +3808,15 @@ L119C = L119A+2
         PLA
         CLC
         ADC     #$01
-        BNE     L1F12
-
-.L1F3A
+        BNE     L1F12           ; Always branch
+        
+;-------------------------------------------------------------------------
+; AttractMode
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.AttractMode  
         JSR     L15C3
 
 .L1F3D
@@ -3772,20 +3825,20 @@ L119C = L119A+2
         STA     L0032
         STA     L0011
         STA     L0029
-        JSR     L1105
 
+        JSR     L1105
         JSR     L1D68
         JSR     L0955
 
 .L1F50  ; Loop to handle waiting for SPACE bar to play game
         LDA     #$00
         STA     L0028
-        JSR     L0975
 
+        JSR     L0975
         JSR     L1DDE
 
-        LDA     #$09
-        JSR     L0BEB           ; [SPACE] Start Game
+        LDA     #$09            ; [SPACE] Start Game
+        JSR     ReadKey           
 
         BEQ     L1F73           ; Start Game
 
@@ -3793,21 +3846,22 @@ L119C = L119A+2
         BMI     L1F50           ; loop
 
         ; Attract Mode showing screens 0 - 12?
-        INC     L0013
-        LDA     L0013
+        INC     room_number
+        LDA     room_number
         CMP     #$0C
         BCC     L1F3D
 
         LDA     #$00
-        STA     L0013
-        BEQ     L1F3D
+        STA     room_number
+        BEQ     L1F3D           ; Always loop
+;-------------------------------------------------------------------------
 
 .L1F73  ; Start Game
         LDA     #$00
-        STA     Score1
-        STA     Score2
-        STA     Score3
-        JSR     L1ACE
+        STA     score1
+        STA     score2
+        STA     score3
+        JSR     DrawScoreandHighscore
 
         LDA     #$96
         STA     L007B
@@ -3822,7 +3876,7 @@ L119C = L119A+2
 
         STY     L0031
         STY     L0011
-        STY     L0013
+        STY     room_number
         RTS
 
         EQUB    $08,$46,$00,$80,$05,$1A,$01,$80
@@ -3972,8 +4026,8 @@ L119C = L119A+2
         LDA     L0014
         BEQ     L206E
 
-        DEC     L001B
-        JSR     L1AFC
+        DEC     lives
+        JSR     DrawLives
 
 .L206E
         LDA     #$FF
@@ -4955,6 +5009,12 @@ L119C = L119A+2
         EQUB    $31,$3A,$45,$51,$55,$42,$20,$26
         EQUB    $30
 
+;-------------------------------------------------------------------------
+; Relocation Code
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L4B80
         LDA     #$8C
         LDX     #$00
@@ -4993,15 +5053,15 @@ L119C = L119A+2
         STA     ulaMode         ; Mode 2
         CLI
         LDA     #$00
-        STA     HighScore1      ; HiScore
-        STA     HighScore2           
-        STA     HighScore3
-        STA     Score1          ; Score
-        STA     Score2          ; Score
-        STA     Score3          ; Score
+        STA     highscore1      ; Hiscore
+        STA     highscore2           
+        STA     highscore3
+        STA     score1          ; score
+        STA     score2          ; score
+        STA     score3          ; score
         STA     L0034
         LDA     #$F1
-        STA     soundFlag
+        STA     sound_flag
 
         LDA     #$08
         LDX     #$EE
@@ -5011,9 +5071,8 @@ L119C = L119A+2
         ; return
 
 .L4BE0
-        EQUB    $7F
-        EQUB    $50,$62,$28,$26,$00,$1D,$21,$01
-        EQUB    $07,$00,$08,$06,$F0
+        EQUB    $7F,$50,$62,$28,$26,$00,$1D,$21
+        EQUB    $01,$07,$00,$08,$06,$F0
 
         ; Envelope Data $4BEE
         EQUB    $01,$00,$00,$00,$00,$00,$00,$00
@@ -5023,11 +5082,11 @@ L119C = L119A+2
         LDY     #$00
         STY     L0000
         LDA     #$19
-        STA     L0001
+        STA     L0001           ; $1900
         LDA     #$00
         STA     L0002
         LDA     #$09
-        STA     L0003
+        STA     L0003           ; $0900        
         LDX     #$31
 .L4C0F
         LDA     (L0000),Y
@@ -5044,11 +5103,11 @@ L119C = L119A+2
         LDA     #$00
         STA     L0000
         LDA     #$4A
-        STA     L0001
+        STA     L0001           ; $4A00
         LDA     #$86
         STA     L0002
         LDA     #$03
-        STA     L0003
+        STA     L0003           ; $0386
         LDX     #$01
         LDY     #$00
 .L4C31
