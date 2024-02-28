@@ -62,9 +62,9 @@ L0026   = $0026
 L0028   = $0028
 L0029   = $0029
 
-L002A   = $002A ; Clock 5 byte storage
-L002B   = $002B
-L002C   = $002C
+rand1   = $002A 
+rand2   = $002B
+rand3   = $002C
 
 L0030   = $0030
 L0031   = $0031
@@ -130,13 +130,15 @@ L0096   = $0096
 L0097   = $0097
 L0098   = $0098
 
-; Some code relocatec here
+; Some code relocatec here from $4A00
 L0386   = $0386
+
 
         ORG     NATIVE_ADDR
 .L0900
         JSR     L1F3A
         JMP     L0955
+        ; return
 
 .L0906
         LDX     #$00
@@ -172,12 +174,10 @@ L0386   = $0386
         STA     L0028
         STA     L0014
         STA     L0012
+
         JSR     L135D
-
         JSR     L1113
-
         JSR     L0BFA
-
         JSR     L112D
 
         LDA     #$FF
@@ -185,7 +185,6 @@ L0386   = $0386
         JSR     L1357
 
         JSR     L1105
-
         JSR     L0BFA
 
 .L094E
@@ -201,11 +200,8 @@ L0386   = $0386
         BNE     L0975
 
         JSR     L1105
-
         JSR     L1B5A
-
         JSR     L110C
-
         JSR     L1113
 
         LDA     #$FE
@@ -245,8 +241,8 @@ L0386   = $0386
         STA     L0090
         STA     L0014
         JSR     L0BA5
-
         JMP     L0926
+        ; return
 
 .L09A1
         LDA     L0028
@@ -260,6 +256,7 @@ L0386   = $0386
 
 .L09AC
         JMP     L0906
+        ; return
 
 .L09AF
         LDX     L0089
@@ -327,6 +324,7 @@ L0386   = $0386
         LDA     #$03
         STA     L008F
         JMP     L0D01
+        ; return
 
 .L0A05
         LDA     L0080
@@ -349,9 +347,10 @@ L0386   = $0386
         LDA     #$00
         STA     L0089
         JMP     L0D7A
+        ; return
 
 .L0A22
-        JSR     L157F
+        JSR     RandomNumber
 
         CMP     #$50
         BCS     L0A16
@@ -432,6 +431,7 @@ L0386   = $0386
         BEQ     L0A87
 
         JMP     L0A05
+        ; return
 
 .L0A87
         LDA     #$05
@@ -445,6 +445,7 @@ L0386   = $0386
         STA     L0080
 .L0A96
         JMP     L0D01
+        ; return
 
 .L0A99
         LDA     L0089
@@ -486,6 +487,7 @@ L0386   = $0386
         LDA     L008C
         STA     L0080
         JMP     L09FE
+        ; return
 
 .L0AD1
         LDA     L0089
@@ -537,6 +539,7 @@ L0386   = $0386
         STA     L0089
         STA     L008B
         JMP     L0D7A
+        ; return
 
 .L0B14
         LDA     #$FF
@@ -547,6 +550,7 @@ L0386   = $0386
 
 .L0B1D
         JMP     L0D01
+        ; return
 
 .L0B20
         LDA     L0088
@@ -653,6 +657,7 @@ L0386   = $0386
         BCS     L0BB2
 
         JMP     L0D01
+        ; return
 
 .L0BB2
         STA     L0090
@@ -675,9 +680,11 @@ L0386   = $0386
         BEQ     L0BD1
 
         JMP     L1D68
+        ; return
 
 .L0BD1
         JMP     L0900
+        ; return
 
 .L0BD4
         LDA     #$FF
@@ -723,6 +730,7 @@ L0386   = $0386
         LDA     L0C14,X
         STA     L007C
         JMP     (L007B)
+        ; return
 
 .L0C13
         EQUB    $23
@@ -774,12 +782,10 @@ L0386   = $0386
 .L0D15
         RTS
 
+        ; Should never get here!
         JMP     L0AD1
-
         JMP     L09AF
-
         JMP     L0A39
-
         JMP     L0A99
 
 .L0D22
@@ -803,6 +809,7 @@ L0386   = $0386
         BEQ     L0D3B
 
         JMP     L0B34
+        ; return
 
 .L0D3B
         LDA     L0087
@@ -811,6 +818,7 @@ L0386   = $0386
         INX
 .L0D41
         JMP     L0B3D
+        ; return
 
 .L0D44
         STA     L0086
@@ -930,6 +938,7 @@ L0386   = $0386
         LDX     #$E2            
         LDY     #$0D            ; $0DE2
         JMP     OSWORD          ; Play Sound
+        ; return
 
         ; Sound Data $0DE2
         EQUB    $12,$00,$11,$00,$F1,$FF,$00,$00
@@ -939,9 +948,11 @@ L0386   = $0386
         BNE     L0DF1
 
         JMP     L0DF4
+        ; return
 
 .L0DF1
         JMP     L0E62
+        ; return
 
 .L0DF4
         LDX     L0080
@@ -950,12 +961,14 @@ L0386   = $0386
 
         TXA
         JMP     L0E6B
+        ; return
 
 .L0DFD
         LDA     L0014
         BNE     L0E04
 
         JMP     L0FF2
+        ; return
 
 .L0E04
         DEC     L0013
@@ -991,6 +1004,7 @@ L0386   = $0386
         ADC     #$40
         STA     L008D
         JMP     L0E5B
+        ; return
 
 .L0E3D
         SBC     #$10
@@ -999,6 +1013,7 @@ L0386   = $0386
         SBC     #$10
         STA     L008D
         JMP     L0E5B
+        ; return
 
 .L0E4A
         CPX     #$05
@@ -1015,6 +1030,7 @@ L0386   = $0386
         LDA     #$FF
         STA     L0022
         JMP     L0FF2
+        ; return
 
 .L0E62
         CLC
@@ -1043,7 +1059,9 @@ L0386   = $0386
 
         LDA     #$19
         JMP     L0E8D
+        ; return
 
+        ; Should never get here!
         JSR     L0E95
 
 .L0E8C
@@ -1054,6 +1072,7 @@ L0386   = $0386
         ADC     L0081
         STA     L000E
         JMP     L0E95
+        ; return
 
 .L0E95
         JSR     L2007
@@ -1082,6 +1101,7 @@ L0386   = $0386
         BNE     L0EB5
 
         JMP     L0FF2
+        ; return
 
 .L0EB5
         INC     L0013
@@ -1118,6 +1138,7 @@ L0386   = $0386
         SBC     #$40
         STA     L008D
         JMP     L0E5B
+        ; return
 
 .L0EEF
         CLC
@@ -1127,6 +1148,7 @@ L0386   = $0386
         ADC     #$10
         STA     L008D
         JMP     L0E5B
+        ; return
 
 .L0EFD
         CPX     #$06
@@ -1141,7 +1163,8 @@ L0386   = $0386
         STA     L008D
 .L0F0E
         JMP     L0E5B
-
+        ; return
+        ; Should never get here!
         LDA     #$FF
         RTS
 
@@ -1235,6 +1258,7 @@ L0386   = $0386
         ADC     #$04
         STA     L0013
         JMP     L1041
+        ; return
 
 .L0F90
         LDA     #$00
@@ -1330,12 +1354,14 @@ L0386   = $0386
         SBC     #$02
         STA     L000E
         JMP     L0F1E
+        ; return
 
 .L1012
         LDA     L0014
         BNE     L1019
 
         JMP     L0FF2
+        ; return
 
 .L1019
         SEC
@@ -1353,6 +1379,7 @@ L0386   = $0386
         ADC     #$A6
         STA     L008D
         JMP     L1041
+        ; return
 
 .L1034
         CLC
@@ -1365,9 +1392,10 @@ L0386   = $0386
 .L1041
         INC     L0022
         JMP     L094E
+        ; return
 
+        ; DATA
         EQUB    $31
-
         EQUB    $0D,$04,$1A,$14,$44,$45,$58,$3A
         EQUB    $42,$4E,$45,$20,$6C,$6F,$63,$5F
         EQUB    $6C,$6F
@@ -1428,31 +1456,22 @@ L0386   = $0386
         LDA     L1592
 .L10AE
         JSR     L1324
-
         JSR     L1B21
-
         JSR     L1113
-
         JSR     L10E6
-
         JSR     L1105
-
         JSR     L1B5A
-
         JSR     L110C
-
         JMP     L1DDE
+        ; return
 
 .L10C6
         JSR     L1105
 
         LDA     L0081
         JSR     L1324
-
         JSR     L1B21
-
         JSR     L1B5A
-
         JSR     L110C
 
 .L10D7
@@ -1460,7 +1479,6 @@ L0386   = $0386
         BEQ     L10D7
 
         JSR     L1DDE
-
         JSR     L1113
 
         LDA     L0081
@@ -1492,16 +1510,19 @@ L0386   = $0386
 
 .L1102
         JMP     L112D
+        ; return
 
 .L1105
         LDX     #$AA
         LDY     #$15
         JMP     L1117
+        ; return
 
 .L110C
         LDX     #$AA
         LDY     #$15
         JMP     L1131
+        ; return
 
 .L1113
         LDX     #$91
@@ -1546,6 +1567,7 @@ L0386   = $0386
         LDA     L0021
         AND     #$01
         JMP     L116D
+        ; return
 
 .L1159
         LDX     #$00
@@ -1615,10 +1637,12 @@ L119C = L119A+2
 
         LDA     L007B
         JMP     L11DB
+        ; return
 
 .L11B8
         LDA     (L0000,X)
         JMP     L11DB
+        ; return
 
         CMP     #$80
         BCS     L11CF
@@ -1667,6 +1691,7 @@ L119C = L119A+2
         BEQ     L1202
 
         JMP     L1172
+        ; return
 
 .L1202
         RTS
@@ -2011,6 +2036,7 @@ L119C = L119A+2
 .L13F6
         CLC
         JMP     L18CA
+        ; return
 
 .L13FA
         RTS
@@ -2027,6 +2053,7 @@ L119C = L119A+2
 .L1409
         STA     L0086
         JMP     L0A39
+        ; return
 
         JSR     L14F2
 
@@ -2084,7 +2111,7 @@ L119C = L119A+2
         LSR     A
         BNE     L14B2
 
-        JSR     L157F
+        JSR     RandomNumber
 
         CMP     #$80
         BCS     L147B
@@ -2119,6 +2146,7 @@ L119C = L119A+2
         BEQ     L148D
 
         JMP     L0DC2
+        ; return
 
 .L148D
         LDA     L0013
@@ -2133,14 +2161,15 @@ L119C = L119A+2
         BCS     L14A0
 
         JMP     L09AF
+        ; return
 
 .L14A0
-        JSR     L157F
+        JSR     RandomNumber
 
         CMP     #$F5
         BCC     L14B2
 
-        JSR     L157F
+        JSR     RandomNumber
 
         CMP     #$40
         BCS     L14BF
@@ -2188,24 +2217,23 @@ L119C = L119A+2
         BEQ     L14E2
 
         JMP     L0B20
+        ; return
 
+        ; Should never get here!
         BEQ     L14E2
-
         RTS
 
 .L14E2
         JSR     L0F32
-
         BNE     L14E8
-
         RTS
 
 .L14E8
         LDA     L0081
         CMP     L15AB
         BCC     L1510
-
         JMP     L09AF
+        ; return
 
 .L14F2
         LDA     L0081
@@ -2236,6 +2264,7 @@ L119C = L119A+2
         PLA
         PLA
         JMP     L14B2
+        ; return
 
 .L1516
         LDA     #$06
@@ -2256,7 +2285,7 @@ L119C = L119A+2
         CMP     #$FE
         BNE     L153B
 
-        JSR     L157F
+        JSR     RandomNumber
 
         AND     #$3E
         ORA     #$0E
@@ -2278,7 +2307,7 @@ L119C = L119A+2
         STA     L000F
         LDA     L20B5,X
         STA     L0010
-        JSR     L157F
+        JSR     RandomNumber
 
         LDY     #$00
         STY     L15A7
@@ -2299,26 +2328,39 @@ L119C = L119A+2
 .L1575
         RTS
 
-.L1576
+;-------------------------------------------------------------------------
+; ReadSystemClock
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.ReadSystemClock
         LDX     #$2A
         LDY     #$00            ; $002A Clock storage area
         LDA     #$01
         JMP     OSWORD          ; OSWORD 1 - Read system clock.
-
-.L157F
-        LDA     L002A
+        ; return
+;-------------------------------------------------------------------------
+; RandomNumber
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.RandomNumber
+        LDA     rand1
         AND     #$42
         CLC
         ADC     #$3E
         ASL     A
         ASL     A
-        ROL     L002C
-        ROL     L002B
-        ROL     L002A
-        LDA     L002A
+        ROL     rand3
+        ROL     rand2
+        ROL     rand1
+        LDA     rand1
         RTS
+;-------------------------------------------------------------------------
 
-.L1591
+.L1591  ; DATA
         EQUB    $C8
 
 .L1592
@@ -2375,7 +2417,7 @@ L119C = L119A+2
         STA     L0013
         JSR     L1ACE
         JSR     L1AFC
-        JMP     L1576
+        JMP     ReadSystemClock
         ; return
 
 .L15FD
@@ -2539,7 +2581,7 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 .ClearPalette
 {
-        RTS     ;SEI ; NB Temp ignore ClearPalette to see screen redraw
+        RTS     ;SEI
         LDX     #$0F
 .loop
         LDA     L17E9,X
@@ -2793,7 +2835,7 @@ L119C = L119A+2
 .L18EB
         JMP     L1ACE
         ; return
-        
+
 .L18EE
         LDA     Score1
         STA     HighScore1
@@ -2855,6 +2897,7 @@ L119C = L119A+2
 
         INC     L0030
         JMP     L194B
+        ; return
 
 .L194A
         RTS
@@ -2871,6 +2914,7 @@ L119C = L119A+2
         JSR     L186D
 
         JMP     (L007B)
+        ; return
 
 .L1960
         EQUB    $86
@@ -2949,6 +2993,7 @@ L119C = L119A+2
 
         LDA     HighScore1
         JMP     L1B06
+        ; return
 
 .L1AFC
         LDA     #$E0
@@ -2994,6 +3039,7 @@ L119C = L119A+2
         LDA     L0085
         STA     L000C
         JMP     L12C4
+        ; return
 
 .L1B40
         LDA     L0080
@@ -3087,26 +3133,38 @@ L119C = L119A+2
         BEQ     L1BC5
 
         JMP     L1216
+        ; return
 
 .L1BC5
         JMP     L116B
+        ; return
 
+;-------------------------------------------------------------------------
+; EventHandler
+;-------------------------------------------------------------------------
+; On entry  :
+; On exit   : 
+;-------------------------------------------------------------------------
+.EventHandler
+{
         PHP
         PHA
-        CMP     #$04
-        BNE     L1BD6
+        CMP     #%00000100      ; Is this a v-sync event?
+        BNE     exit    
 
         INC     L0028
-        LDA     L0034
-        BEQ     L1BD6
 
+        LDA     L0034
+        BEQ     exit
         DEC     L0034
-.L1BD6
+.exit
         PLA
         PLP
         RTS
+}
+;-------------------------------------------------------------------------
 
-.L1BD9
+.L1BD9  ; DATA ?
         EQUB    $00,$00,$00,$00,$00,$00,$00,$00
         EQUB    $00,$00,$00,$00
 
@@ -3190,6 +3248,7 @@ L119C = L119A+2
         JSR     L1883
         JSR     L172D
         JMP     L194B
+        ; return
 
 .L1C67
         LDY     #$00
@@ -3271,6 +3330,7 @@ L119C = L119A+2
         BEQ     L1CD6
 
         JMP     L1CFA
+        ; return
 
 .L1CD6
         CLC
@@ -3280,11 +3340,13 @@ L119C = L119A+2
         JSR     CalcAddress
 
         JMP     L1C89
+        ; return
 
 .L1CE3
         LDA     L0004
         STA     L000D
         JMP     L1C89
+        ; return
 
 .L1CEA
         CLC
@@ -3295,6 +3357,7 @@ L119C = L119A+2
         ADC     #$00
         STA     L0010
         JMP     L1C67
+        ; return
 
 .L1CFA
         CLC
@@ -3305,12 +3368,13 @@ L119C = L119A+2
         ADC     #$00
         STA     L0010
         JMP     L1C67
+        ; return
 
 .L1D0A
         RTS
 
+        ; DATA ?
         EQUB    $03
-
         EQUB    $34,$20,$F2,$0B,$2E,$41,$20,$F1
         EQUB    $02,$F3
 
@@ -3411,16 +3475,14 @@ L119C = L119A+2
         LDA     L1D9D,X
         STA     L0087
         JMP     L110C
+        ; return
 
-.L1D9A
+.L1D9A  ; DATA ?
         EQUB    $08
-
 .L1D9B
         EQUB    $46
-
 .L1D9C
         EQUB    $01
-
 .L1D9D
         EQUB    $80,$00,$46,$01,$80,$00,$46,$01
         EQUB    $80,$00,$D6,$01,$80,$4B,$CE,$00
@@ -3429,6 +3491,12 @@ L119C = L119A+2
         EQUB    $82,$00,$46,$01,$80,$00,$46,$00
         EQUB    $80,$48,$66,$00,$80
 
+;-------------------------------------------------------------------------
+; ???
+;-------------------------------------------------------------------------
+; On entry  :
+; On exit   : 
+;-------------------------------------------------------------------------
 .L1DCA
         LDA     L0013
         ASL     A
@@ -3440,6 +3508,7 @@ L119C = L119A+2
         LDA     #$00
         TAY
         RTS
+;-------------------------------------------------------------------------
 
 .L1DDC
         PLA
@@ -3447,7 +3516,6 @@ L119C = L119A+2
 
 .L1DDE
         JSR     L1105
-
         JSR     L1DCA
 
 .L1DE4
@@ -3539,6 +3607,7 @@ L119C = L119A+2
         CLC
         ADC     #$01
         JMP     L1DE4
+        ; return
 
 .L1E65
         LDA     #$03
@@ -3563,6 +3632,7 @@ L119C = L119A+2
         STA     L0003
         STA     L0004
         JMP     L12C4
+        ; return
 
 .L1E8E
         CLC
@@ -3608,8 +3678,8 @@ L119C = L119A+2
         ADC     #$04
         TAY
         JSR     L1E65
-
         JMP     L1F0A
+        ; return
 
 .L1ECD
         LDA     (L0023),Y
@@ -4901,7 +4971,7 @@ L119C = L119A+2
         LDA     #$C8
         STA     EVENTV
         LDA     #$1B
-        STA     EVENTV+1
+        STA     EVENTV+1        ; $1BC8
         CLI
         LDA     #$0E
         LDX     #$04
@@ -4923,12 +4993,12 @@ L119C = L119A+2
         STA     ulaMode         ; Mode 2
         CLI
         LDA     #$00
-        STA     HighScore1           ; HiScore
+        STA     HighScore1      ; HiScore
         STA     HighScore2           
         STA     HighScore3
-        STA     Score1           ; Score
-        STA     Score2           ; Score
-        STA     Score3           ; Score
+        STA     Score1          ; Score
+        STA     Score2          ; Score
+        STA     Score3          ; Score
         STA     L0034
         LDA     #$F1
         STA     soundFlag
@@ -4937,7 +5007,8 @@ L119C = L119A+2
         LDX     #$EE
         LDY     #$4B            ; $4BEE
         JSR     OSWORD          ; OSWORD   8 - Define an envelope 
-        JMP     L0900
+        JMP     L0900           ; Jump to start of relocated game
+        ; return
 
 .L4BE0
         EQUB    $7F
@@ -5005,9 +5076,8 @@ L119C = L119A+2
         STA     L004C
         RTS
 
-.L4C58
+.L4C58  ; DATA ?
         EQUB    $37
-
         EQUB    $3A,$45,$51,$55,$42,$20,$39,$38
         EQUB    $0D,$21,$F2,$05,$20,$0D,$21,$FC
         EQUB    $20,$45,$51,$55,$42,$20,$76,$5F
@@ -5056,6 +5126,7 @@ L119C = L119A+2
         JSR     OSWRCH          ; VDU 12 Clear text or graphics window.
 
         JMP     L4B80 + OFFSET
+        ; return
 
 ;-------------------------------------------------------------------------
 ; End address to be saved
