@@ -218,13 +218,13 @@ L0386   = $0386
 
         LDA     room_number
         CMP     #$09
-        BEQ     L0989           ; room 10
+        BEQ     L0989           ; room 10 ?
 
         CMP     #$07
-        BEQ     L0989           ; room 6
+        BEQ     L0989           ; room 8 ?
 
         CMP     #$04
-        BEQ     L0989           ; room 3
+        BEQ     L0989           ; room 5 ?
 
         JSR     L1DDE
 
@@ -677,15 +677,21 @@ L0386   = $0386
         JSR     L0386
 
         LDA     lives
-        BEQ     L0BD1
+        BEQ     GameOver
 
         JMP     L1D68
         ; return
 
-.L0BD1
+.GameOver
         JMP     L0900
         ; return
 
+;-------------------------------------------------------------------------
+; 
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L0BD4
         LDA     #$FF
         STA     L008B
@@ -694,7 +700,12 @@ L0386   = $0386
         INC     L008D
         INC     L008D
         RTS
-
+;-------------------------------------------------------------------------
+; 
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L0BE1
         DEC     L0080
         LDA     L0086
@@ -702,7 +713,6 @@ L0386   = $0386
         ADC     L0080
         STA     L0080
         RTS
-
 ;-------------------------------------------------------------------------
 ; ReadKey
 ;-------------------------------------------------------------------------
@@ -988,7 +998,7 @@ L0386   = $0386
         ADC     #$4B
         STA     L008C
         LDX     room_number
-        CPX     #$04            ; room 3
+        CPX     #$04            ; room 5 ?
         BNE     L0E26
 
         SEC
@@ -1121,7 +1131,7 @@ L0386   = $0386
         SBC     #$4C
         STA     L008C
         LDX     room_number
-        CPX     #$05            ; room 3
+        CPX     #$05            ; room 6 ?
         BNE     L0ED7
 
         CLC
@@ -1377,7 +1387,7 @@ L0386   = $0386
         LDA     room_number
         SBC     #$04
         STA     room_number
-        CMP     #$06
+        CMP     #$06                    ; room 7 ?
         BNE     L1034
 
         CLC
@@ -1947,9 +1957,6 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 
 .L1347  ; DATA
-        ;EQUB    $01,$01,$01,$01,$01,$01,$01,$01
-        ;EQUB    $01,$01,$01,$01,$01,$01,$01,$01
-
         EQUB    $00,$01,$01,$02,$03,$03,$04,$04
         EQUB    $05,$06,$06,$07,$08,$08,$09,$09
 
@@ -2175,7 +2182,7 @@ L119C = L119A+2
 
 .L148D
         LDA     room_number
-        CMP     #$04
+        CMP     #$04                    ; room 5 ?
         BNE     L14A0
 
         LDA     L0086
@@ -2297,7 +2304,7 @@ L119C = L119A+2
         LDA     #$00
         STA     L0096
         LDA     room_number
-        CMP     #$09
+        CMP     #$09                    ; room 10 ?
         BCS     L1575
 
         CMP     #$03
@@ -2637,41 +2644,111 @@ L119C = L119A+2
 
 .L173F
         EQUB    $5C
-
 .L1740
-        EQUB    $17,$57,$17,$95,$17,$57,$17,$5F
-        EQUB    $17,$72,$17,$81,$17,$5C,$17,$81
-        EQUB    $17,$A6,$17,$AC,$17,$5F,$17,$A2
-        EQUB    $96,$8E,$F2,$17,$4C,$DC,$17,$A9
-        EQUB    $FF,$85,$11,$20,$C0,$17,$A9,$D6
-        EQUB    $8D,$F6,$17,$A9,$E6,$8D,$F7,$17
-        EQUB    $D0,$6A,$A9,$D3,$8D,$F6,$17,$A5
-        EQUB    $11,$D0,$36,$20,$C0,$17,$4C,$95
-        EQUB    $17,$A9,$96,$8D,$F2,$17,$A9,$A7
-        EQUB    $8D,$F3,$17,$A9,$B7,$8D,$F4,$17
-        EQUB    $A9,$C7,$8D,$F5,$17,$A9,$D3,$8D
-        EQUB    $F6,$17,$A9,$E3,$8D,$F7,$17,$A9
-        EQUB    $F3,$8D,$F8,$17,$D0,$36,$20,$C0
-        EQUB    $17,$4C,$95,$17,$A9,$D3,$8D,$F6
-        EQUB    $17,$20,$C0,$17,$A9,$E6,$8D,$F7
-        EQUB    $17,$A9,$F0,$8D,$F8,$17,$D0,$1C
-        EQUB    $A2,$01,$86,$25,$CA,$86,$26,$A2
-        EQUB    $96,$8E,$F2,$17,$A2,$AD,$8E,$F3
-        EQUB    $17,$A2,$BC,$8E,$F4,$17,$A2,$CB
-        EQUB    $8E,$F5,$17,$60,$A2,$0F,$BD,$E9
-        EQUB    $17,$8D,$21,$FE,$CA,$10,$F7,$58
-        EQUB    $60
+        EQUB    $17     ; room 1 address   
+        EQUB    $57,$17 ; room 2 address
+        EQUB    $95,$17 ; room 3 address
+        EQUB    $57,$17 ; room 4 address
+        EQUB    $5F,$17 ; room 5 address
+        EQUB    $72,$17 ; room 6 address
+        EQUB    $81,$17 ; room 7 address
+        EQUB    $5C,$17 ; room 8 address
+        EQUB    $81,$17 ; room 9 address
+        EQUB    $A6,$17 ; room 10 address
+        EQUB    $AC,$17 ; room 11 address
+        EQUB    $5F,$17 ; room 12 address
 
-.L17E9
+        ; Room Code to change the palette
+.L1757
+        LDA     #$96
+        STA     L17F2
+.L175C
+        JMP     L17DC
+.L175F
+        LDA     #$FF
+        STA     L0011
+        JSR     L17C0
+        LDA     #$D6
+        STA     L17F6
+        LDA     #$E6
+        STA     L17F7
+        BNE     L17DC
+.L1772
+        LDA     #$D3
+        STA     L17F6
+        LDA     L0011
+        BNE     L17B1
+        JSR     L17C0
+        JMP     L1795
+.L1781    
+        LDA     #$96
+        STA     L17F2
+        LDA     #$A7
+        STA     L17F3
+        LDA     #$B7
+        STA     L17F4
+        LDA     #$C7
+        STA     L17F5
+.L1795   
+        LDA     #$D3
+        STA     L17F6
+        LDA     #$E3
+        STA     L17F7
+        LDA     #$F3
+        STA     L17F8
+        BNE     L17DC
+        JSR     L17C0
+        JMP     L1795
+.L17AC
+        LDA     #$D3
+        STA     L17F6
+.L17B1               
+        JSR     L17C0
+        LDA     #$E6
+        STA     L17F7
+        LDA     #$F0
+        STA     L17F8
+        BNE     L17DC
+.L17C0               
+        LDX     #$01
+        STX     L0025
+        DEX
+        STX     L0026
+        LDX     #$96
+        STX     L17F2
+        LDX     #$AD
+        STX     L17F3
+        LDX     #$BC
+        STX     L17F4
+        LDX     #$CB
+        STX     L17F5
+        RTS            
+.L17DC              
+        LDX     #$0F
+.L17DE               
+        LDA     L17E9,X
+        STA     ulaPalette
+        DEX
+        BPL     L17DE
+        CLI
+        RTS
+
+.L17E9  ; Palette Data
         EQUB    $07,$16,$25,$34,$43,$52,$61,$70
         EQUB    $8F
 
 .L17F2
-        EQUB    $96,$AD,$BC,$CB
-
+        EQUB    $96
+.L17F3
+        EQUB    $AD
+.L17F4
+        EQUB    $BC
+.L17F5  
+        EQUB    $CB
 .L17F6
-        EQUB    $D3,$E3
-
+        EQUB    $D3
+.L17F7
+        EQUB    $E3
 .L17F8
         EQUB    $F3
 
@@ -2806,7 +2883,7 @@ L119C = L119A+2
         JSR     CalcAddress
 
         LDA     #$11
-        JSR     L1FAE
+        JSR     DrawChar
 
         JSR     L1D16
 
@@ -2915,7 +2992,7 @@ L119C = L119A+2
         LDA     L000D
         STA     L0004
         LDA     #$12
-        JSR     L1FAE
+        JSR     DrawChar
 
         JSR     L1B5A
 
@@ -3044,7 +3121,7 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 ; DrawNumbers
 ;-------------------------------------------------------------------------
-; On entry  :
+; On entry  : A contains value
 ; On exit   : 
 ;-------------------------------------------------------------------------
 .DrawNumbers
@@ -3059,13 +3136,13 @@ L119C = L119A+2
         LSR     A
         CLC
         ADC     #$14
-        JSR     L1FAE
+        JSR     DrawChar
 
         PLA
         AND     #$0F
         CLC
         ADC     #$14
-        JSR     L1FAE
+        JSR     DrawChar
         RTS
 ;-------------------------------------------------------------------------
 
@@ -3356,7 +3433,7 @@ L119C = L119A+2
         BEQ     L1CBE
 
         LDA     L001C
-        JSR     L1FAE
+        JSR     DrawChar
 
 .L1CBE
         JSR     L1D16
@@ -3493,7 +3570,9 @@ L119C = L119A+2
 
         RTS
 
-.L1D68
+
+
+.L1D68  ; Game loop ?
         LDA     #$00
         STA     L0089
         STA     L0096
@@ -3644,7 +3723,7 @@ L119C = L119A+2
         LDA     (L0023),Y
         INY
         STY     L007E
-        JSR     L1FAE
+        JSR     DrawChar
 
         JSR     L1E8E
 
@@ -3867,6 +3946,7 @@ L119C = L119A+2
         STA     L007B
         LDA     #$1F
         STA     L007C
+
         LDY     #$17
 .L1F88
         LDA     (L007B),Y
@@ -3878,18 +3958,19 @@ L119C = L119A+2
         STY     L0011
         STY     room_number
         RTS
-
+;-------------------------------------------------------------------------
+        ; DATA
         EQUB    $08,$46,$00,$80,$05,$1A,$01,$80
         EQUB    $00,$00,$00,$00,$00,$00,$00,$00
         EQUB    $00,$00,$01,$05,$D2,$16,$00
 
 ;-------------------------------------------------------------------------
-; 
+; DrawChar
 ;-------------------------------------------------------------------------
 ; On entry  : 
 ; On exit   : 
 ;-------------------------------------------------------------------------
-.L1FAE
+.DrawChar
         STA     L007B
         TAX
         ASL     A
