@@ -39,15 +39,15 @@ L000F   = $000F
 L0010   = $0010
 L0011   = $0011
 L0012   = $0012
-room_number     = $0013
+room_number             = $0013
 L0014   = $0014
-score1          = $0015
-score2          = $0016
-score3          = $0017
-highscore1      = $0018
-highscore2      = $0019
-highscore3      = $001A
-lives           = $001B
+score1                  = $0015
+score2                  = $0016
+score3                  = $0017
+highscore1              = $0018
+highscore2              = $0019
+highscore3              = $001A
+lives                   = $001B
 L001C   = $001C
 L001D   = $001D
 L001E   = $001E
@@ -59,7 +59,7 @@ L0023   = $0023
 L0024   = $0024
 L0025   = $0025
 L0026   = $0026
-L0028   = $0028
+speed_counter           = $0028
 L0029   = $0029
 
 rand1   = $002A 
@@ -67,11 +67,11 @@ rand2   = $002B
 rand3   = $002C
 
 L0030   = $0030
-L0031   = $0031
+in_play                 = $0031 ; $FF not playing, $00 playing
 L0032   = $0032
 L0033   = $0033
-L0034   = $0034
-sound_flag       = $0035
+walking_sound_delay     = $0034
+sound_flag              = $0035
 L0045   = $0045
 L0046   = $0046
 L0047   = $0047
@@ -121,7 +121,7 @@ L008C   = $008C
 L008D   = $008D
 L008E   = $008E
 L008F   = $008F
-L0090   = $0090
+knock_downs             = $0090
 L0091   = $0091
 L0092   = $0092
 L0093   = $0093
@@ -171,7 +171,7 @@ L0386   = $0386
         BEQ     L0900           ; Quit Game
 
         LDA     #$00
-        STA     L0028
+        STA     speed_counter
         STA     L0014
         STA     L0012
 
@@ -194,9 +194,9 @@ L0386   = $0386
         BEQ     L0972
 
 .L0955 
-        JSR     L1BE5
+        JSR     NextRoom
 
-        LDA     L0031
+        LDA     in_play
         BNE     L0975
 
         JSR     L1105
@@ -238,18 +238,18 @@ L0386   = $0386
         JSR     L1105
 
         LDA     #$03
-        STA     L0090
+        STA     knock_downs     
         STA     L0014
         JSR     L0BA5
         JMP     L0926
         ; return
 
 .L09A1
-        LDA     L0028
+        LDA     speed_counter
         CMP     #$02
         BCC     L09A1
 
-        LDA     L0031
+        LDA     in_play
         BEQ     L09AC
 
         RTS
@@ -652,7 +652,7 @@ L0386   = $0386
 .L0BA5
         LDA     #$00
         STA     L0096
-        LDX     L0090
+        LDX     knock_downs
         CPX     #$03
         BCS     L0BB2
 
@@ -660,7 +660,7 @@ L0386   = $0386
         ; return
 
 .L0BB2
-        STA     L0090
+        STA     knock_downs
         LDX     #$FF
         LDA     L0014
         BNE     L0BC1
@@ -941,7 +941,7 @@ L0386   = $0386
         RTS
 
 .L0DC9
-        LDA     L0034
+        LDA     walking_sound_delay
         BNE     L0DC8
 
         LDA     L0014
@@ -950,8 +950,8 @@ L0386   = $0386
         LDA     sound_flag
         BEQ     L0DC8
 
-        LDA     #$06
-        STA     L0034
+        LDA     #$06            ; walking sound delay
+        STA     walking_sound_delay
         LDA     #$07
         LDX     #$E2            
         LDY     #$0D            ; $0DE2
@@ -1352,6 +1352,12 @@ L0386   = $0386
         LDA     #$00
         RTS
 
+;-------------------------------------------------------------------------
+; 
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L0FF5
         LDA     L0081
         PHA
@@ -1364,7 +1370,12 @@ L0386   = $0386
         STA     L0081
         TXA
         RTS
-
+;-------------------------------------------------------------------------
+; 
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L1005
         LDA     L0081
         CMP     #$22
@@ -1494,7 +1505,7 @@ L0386   = $0386
         JSR     L110C
 
 .L10D7
-        LDA     L0028
+        LDA     speed_counter
         BEQ     L10D7
 
         JSR     L1DDE
@@ -2062,7 +2073,7 @@ L119C = L119A+2
         STA     score1
         LDA     score2
         ADC     #$00
-        JMP     L18CE
+        JMP     Add1000
         ; return
 
 .L13F6
@@ -2417,9 +2428,9 @@ L119C = L119A+2
         EQUB    $00,$00,$00,$00,$00,$00,$00,$00
         EQUB    $00,$01,$05,$D2,$16,$00,$80,$06
 
-.L15C3  ; Initilase game data?
+.L15C3  ; Initialise game data?
         LDA     #$FF
-        STA     L0031
+        STA     in_play
         LDA     #$04
         STA     lives
         LDA     #$00
@@ -2903,8 +2914,15 @@ L119C = L119A+2
         INY
         INY
         BNE     L18B4
+        ; Always branch
 
-.L18C2  ; Lantern score 125
+;-------------------------------------------------------------------------
+; AddScore
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.Add125  ; Lantern score 125
         SED
         CLC
         LDA     score1
@@ -2913,7 +2931,7 @@ L119C = L119A+2
 .L18CA
         LDA     score2
         ADC     #$01
-.L18CE
+.Add1000
         STA     score2
         TAX
         LDA     score3
@@ -2946,6 +2964,7 @@ L119C = L119A+2
         STY     highscore3
         JMP     DrawScoreandHighscore
         ; return
+;-------------------------------------------------------------------------
 
 .L18F9
         SEC
@@ -2995,8 +3014,7 @@ L119C = L119A+2
         JSR     DrawChar
 
         JSR     L1B5A
-
-        JSR     L18C2
+        JSR     Add125
 
         INC     L0030
         JMP     L194B
@@ -3272,14 +3290,14 @@ L119C = L119A+2
 {
         PHP
         PHA
-        CMP     #%00000100      ; Is this a v-sync event?
+        CMP     #%00000100              ; Is this a v-sync event?
         BNE     exit    
 
-        INC     L0028
+        INC     speed_counter           ; counter between 0 - 2
 
-        LDA     L0034
+        LDA     walking_sound_delay     ; counter between 0 - 6
         BEQ     exit
-        DEC     L0034
+        DEC     walking_sound_delay
 .exit
         PLA
         PLP
@@ -3287,27 +3305,34 @@ L119C = L119A+2
 }
 ;-------------------------------------------------------------------------
 
-.L1BD9  ; DATA ?
-        EQUB    $00,$00,$00,$00,$00,$00,$00,$00
+.L1BD9  ; Room entered Data, first value never used for room 1
+        EQUB    $00,$00,$00,$00
+        EQUB    $00,$00,$00,$00
         EQUB    $00,$00,$00,$00
 
-.L1BE5
-        LDA     L0031
-        BNE     L1C00
+;-------------------------------------------------------------------------
+; NextRoom
+;-------------------------------------------------------------------------
+; On entry  :
+; On exit   : 
+;-------------------------------------------------------------------------
+.NextRoom
+        LDA     in_play
+        BNE     L1C00           ; Attract Mode?
 
         LDX     room_number
-        BEQ     L1C00
+        BEQ     L1C00           ; room 1 no entry score
 
         LDA     L1BD9,X
-        BNE     L1C00
+        BNE     L1C00           ; room already entered
 
-        LDA     #$FF
+        LDA     #$FF            ; Room entered, mark it with $FF
         STA     L1BD9,X
         SED
         CLC
         LDA     score2
-        ADC     #$20
-        JSR     L18CE
+        ADC     #$20            ; Score 2000 points for entering new room
+        JSR     Add1000
 
 .L1C00
         JSR     L1105
@@ -3900,7 +3925,7 @@ L119C = L119A+2
 
 .L1F3D
         LDA     #$00
-        STA     L0028
+        STA     speed_counter
         STA     L0032
         STA     L0011
         STA     L0029
@@ -3911,7 +3936,7 @@ L119C = L119A+2
 
 .L1F50  ; Loop to handle waiting for SPACE bar to play game
         LDA     #$00
-        STA     L0028
+        STA     speed_counter
 
         JSR     L0975
         JSR     L1DDE
@@ -3954,7 +3979,7 @@ L119C = L119A+2
         DEY
         BNE     L1F88
 
-        STY     L0031
+        STY     in_play         ; Y = 0
         STY     L0011
         STY     room_number
         RTS
@@ -4103,7 +4128,7 @@ L119C = L119A+2
 
         STA     L0089
         LDA     #$03
-        STA     L0090
+        STA     knock_downs
         LDA     L0014
         BEQ     L206E
 
@@ -5140,7 +5165,7 @@ L119C = L119A+2
         STA     score1          ; score
         STA     score2          ; score
         STA     score3          ; score
-        STA     L0034
+        STA     walking_sound_delay
         LDA     #$F1
         STA     sound_flag
 
