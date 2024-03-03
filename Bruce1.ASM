@@ -130,9 +130,67 @@ L0096   = $0096
 L0097   = $0097
 L0098   = $0098
 
-; Some code relocatec here from $4A00
+; Some code relocated here from $4A00
 L0386   = $0386
-
+;L0386               STX $36
+;                    sty $37
+;                    LDY #$00
+;L038c               sty $7b
+;                    LDA ($36),Y
+;                    bmi L03d4
+;                    STA $49
+;                    iny
+;                    iny
+;                    LDA ($36),Y
+;                    STA $4b
+;                    LDA $35
+;                    STA $47
+;                    JSR S03d5
+;                    LDY $7b
+;                    iny
+;                    LDA ($36),Y
+;                    STA $49
+;                    INC $45
+;                    JSR S03d5
+;                    LDX #$00
+;                    STX $47
+;                    inx
+;                    STX $4b
+;                    JSR S03d5
+;                    dec $45
+;                    JSR S03d5
+;                    LDA $35
+;                    STA $47
+;L03c0               LDA #$80
+;                    LDX #$fa
+;                    LDY #$ff
+;                    JSR $fff4
+;                    cpx #$0e
+;                    BCC L03c0
+;                    LDY $7b
+;                    iny
+;                    iny
+;                    iny
+;                    BPL L038c
+;L03d4               RTS
+                    
+;S03d5               LDX #$45
+;                    LDY #$00
+;                    LDA #$07
+;                    JMP $fff1
+                    
+;                                                              51 55 
+;                    42 20 31 31 0d 21 16 05 20 0d 21 20 2e 45 51 55 
+;                    42 20 77 61 6c 6c 3a 45 51 55 42 20 2d 31 3a 45 
+;                    51 55 42 20 38 38 3a 45 51 55 42 20 26 46 31 3a 
+;                    45 51 55 42 20 32 33 0d 21 2a 05 20 0d 21 34 30 
+;                    45 51 55 42 20 77 61 6c 6c 3a 45 51 55 42 20 26 
+;                    30 30 3a 45 51 55 42 20 31 36 30 3a 45 51 55 42 
+;                    20 26 46 31 3a 45 51 55 42 20 32 37 0d 21 3e 05 
+;                    20 0d 21 48 30 45 51 55 42 20 77 61 6c 6c 3a 45 
+;                    51 55 42 20 26 30 30 3a 45 51 55 42 20 32 33 34 
+;                    3a 45 51 55 42 20 26 46 31 3a 45 51 55 42 20 32 
+;                    37 0d 21 52 05 20 
 
         ORG     NATIVE_ADDR
 .L0900
@@ -2563,6 +2621,7 @@ L119C = L119A+2
         STA     in_play
         LDA     #$04
         STA     lives
+.L15CB
         LDA     #$00
         STA     L0026
         STA     L0030
@@ -2931,7 +2990,7 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 ; AnimatedRoomPalette
 ;-------------------------------------------------------------------------
-; Toggle colours between black abd white
+; Toggle colours between black and white
 ;-------------------------------------------------------------------------
 .AnimateRoomPalette
         SEI
@@ -2987,10 +3046,10 @@ L119C = L119A+2
 ; Standard rooms palatte
 ;-------------------------------------------------------------------------
 .L1843
-        CMP     #$08
+        CMP     #$08            ; room 9
         BEQ     L184B
 
-        CMP     #$06
+        CMP     #$06            ; room 8
         BNE     L1865
 
 .L184B
@@ -3193,7 +3252,7 @@ L119C = L119A+2
         JSR     Add125                  ; add score
 
         INC     L0030
-        JMP     L194B                   ; move bruce along (jumping)
+        JMP     L194B                   ; move bruce along (flying jump)
         ; return
 
 .L194A
@@ -3213,56 +3272,228 @@ L119C = L119A+2
         JMP     (L007B)
         ; return
 
+;-------------------------------------------------------------------------
+; Another JMP table
+;-------------------------------------------------------------------------
 .L1960
         EQUB    $86
 
 .L1961
-        EQUB    $19,$78,$19,$88,$19,$96,$19,$A4
-        EQUB    $19,$D9,$19,$1E,$1A,$86,$19,$34
-        EQUB    $1A,$5C,$1A,$9C,$1A,$C2,$19,$A5
-        EQUB    $30,$C9,$14,$90,$08,$A9,$97,$8D
-        EQUB    $F2,$17,$8D,$21,$FE,$58,$60,$A5
-        EQUB    $11,$F0,$FA,$A9,$D7,$8D,$F6,$17
-        EQUB    $8D,$21,$FE,$58,$60,$B1,$7D,$10
-        EQUB    $08,$A9,$97,$8D,$F2,$17,$8D,$21
-        EQUB    $FE,$58,$60,$A0,$03,$B1,$7D,$10
-        EQUB    $08,$A9,$E7,$8D,$F7,$17,$8D,$21
-        EQUB    $FE,$A0,$00,$B1,$7D,$10,$08,$A9
-        EQUB    $D7,$8D,$F6,$17,$8D,$21,$FE,$58
-        EQUB    $60,$A0,$03,$B1,$7D,$10,$EA,$58
-        EQUB    $A2,$1D,$A0,$28,$20,$86,$03,$20
-        EQUB    $CB,$15,$20,$7E,$1F,$4C,$55,$09
-        EQUB    $A5,$11,$F0,$17,$A0,$09,$B1,$7D
-        EQUB    $10,$08,$A2,$D7,$8E,$F6,$17,$8E
-        EQUB    $21,$FE,$A0,$0C,$B1,$7D,$10,$2B
-        EQUB    $4C,$BC,$1A,$A0,$18,$B1,$7D,$10
-        EQUB    $22,$A0,$1B,$B1,$7D,$10,$1C,$A2
-        EQUB    $E7,$8E,$F7,$17,$8E,$21,$FE,$A0
-        EQUB    $12,$B1,$7D,$10,$0E,$A0,$15,$B1
-        EQUB    $7D,$10,$08,$A2,$F7,$8E,$F8,$17
-        EQUB    $8E,$21,$FE,$58,$60,$A0,$0F,$B1
-        EQUB    $7D,$10,$0D,$88,$88,$88,$10,$F7
-        EQUB    $A9,$D7,$8D,$F6,$17,$8D,$21,$FE
-        EQUB    $58,$60,$60,$A0,$09,$B1,$7D,$10
-        EQUB    $F7,$88,$88,$88,$10,$F7,$A9,$D7
-        EQUB    $8D,$F6,$17,$8D,$21,$FE,$A0,$1B
-        EQUB    $B1,$7D,$10,$0D,$88,$88,$88,$10
-        EQUB    $F7,$A9,$E7,$8D,$F7,$17,$8D,$21
-        EQUB    $FE,$58,$60,$B1,$7D,$10,$3A,$A9
-        EQUB    $D7,$8D,$F6,$17,$8D,$21,$FE,$C6
-        EQUB    $13,$20,$6D,$18,$E6,$13,$A0,$1E
-        EQUB    $B1,$7D,$10,$25,$A0,$21,$B1,$7D
-        EQUB    $10,$1F,$A9,$E7,$8D,$F7,$17,$8D
-        EQUB    $21,$FE,$20,$6D,$18,$A0,$03,$B1
-        EQUB    $7D,$10,$0E,$A0,$06,$B1,$7D,$10
-        EQUB    $08,$A9,$F7,$8D,$F8,$17,$8D,$21
-        EQUB    $FE,$58,$60,$B1,$7D,$10,$2C,$A0
-        EQUB    $03,$B1,$7D,$10,$26,$85,$29,$A0
-        EQUB    $06,$B1,$7D,$10,$1E,$A9,$D7,$8D
-        EQUB    $F6,$17,$8D,$21,$FE,$A0,$09,$B1
-        EQUB    $7D,$10,$10,$A9,$E7,$8D,$F7,$17
-        EQUB    $8D,$21,$FE,$A9,$F7,$8D,$F8,$17
-        EQUB    $8D,$21,$FE,$58,$60
+        EQUB    $19             ; $1986
+        EQUB    $78,$19         ; $1978
+        EQUB    $88,$19         ; $1988
+        EQUB    $96,$19         ; $1996
+        EQUB    $A4,$19         ; $19A4
+        EQUB    $D9,$19         ; $19D9
+        EQUB    $1E,$1A         ; $1A1E
+        EQUB    $86,$19         ; $1986
+        EQUB    $34,$1A         ; $1A34
+        EQUB    $5C,$1A         ; $1A5C
+        EQUB    $9C,$1A         ; $1A9C
+        EQUB    $C2,$19         ; $19C2
+        
+.L1978 
+        LDA     $30
+        CMP     #$14
+        BCC     L1986
+        LDA     #$97            ; Black
+        STA     L17F2
+        STA     ulaPalette
+.L1986               
+        CLI
+        RTS
+                    
+.L1988               
+        LDA     L0011
+        BEQ     L1986
+        LDA     #$D7            ; Black
+        STA     L17F6
+        STA     ulaPalette
+        CLI
+        RTS
+                    
+.L1996               
+        LDA     ($7D),Y
+        BPL     L19A2
+        LDA     #$97            ; Black
+        STA     L17F2
+        STA     ulaPalette
+.L19A2               
+        CLI
+        RTS
+                    
+.L19A4               
+        LDY     #$03
+        LDA     ($7D),Y
+        BPL     L19B2
+        LDA     #$E7            ; Black
+        STA     L17F7
+        STA     ulaPalette
+.L19B2               
+        LDY     #$00
+        LDA     ($7D),Y
+        BPL     L19C0
+        LDA     #$D7            ; Black
+        STA     L17F6
+        STA     ulaPalette
+.L19C0               
+        CLI
+        RTS
+                    
+.L19C2               
+        LDY     #$03
+        LDA     ($7D),Y
+        BPL     L19B2
+        CLI
+        LDX     #$1D
+        LDY     #$28
+        JSR     L0386
+        JSR     L15CB
+        JSR     L1F7E
+        JMP     L0955
+                    
+.L19D9               
+        LDA     L0011
+        BEQ     L19F4
+        LDY     #$09
+        LDA     ($7D),Y
+        BPL     L19EB
+        LDX     #$D7            ; Black
+        STX     L17F6
+        STX     ulaPalette
+.L19EB               
+        LDY     #$0C
+        LDA     ($7D),Y
+        BPL     L1A1C
+        JMP     L1ABC
+                    
+.L19F4               
+        LDY     #$18
+        LDA     ($7D),Y
+        BPL     L1A1C
+        LDY     #$1B
+        LDA     ($7D),Y
+        BPL     L1A1C
+        LDX     #$E7            ; Black
+        STX     L17F7
+        STX     ulaPalette
+        LDY     #$12
+        LDA     ($7D),Y
+        BPL     L1A1C
+        LDY     #$15
+        LDA     ($7D),Y
+        BPL     L1A1C
+        LDX     #$F7            ; Black
+        STX     L17F8
+        STX     ulaPalette
+.L1A1C               
+        CLI
+        RTS
+                    
+.L1A1E               
+        LDY     #$0F
+.L1A20               
+        LDA     ($7D),Y
+        BPL     L1A31
+        DEY
+        DEY
+        DEY
+        BPL     L1A20
+        LDA     #$D7            ; Black
+        STA     L17F6
+        STA     ulaPalette
+.L1A31               
+        CLI
+        RTS
+                    
+.L1A33               
+        RTS
+                    
+.L1A34               
+        LDY     #$09
+.L1A36               
+        LDA     ($7D),Y
+        BPL     L1A31
+        DEY
+        DEY
+        DEY
+        BPL     L1A36
+        LDA     #$D7            ; Black
+        STA     L17F6
+        STA     ulaPalette
+        LDY     #$1B
+.L1A49               
+        LDA     ($7D),Y
+        BPL     L1A5A
+        DEY
+        DEY
+        DEY
+        BPL     L1A49
+        LDA     #$E7            ; Black
+        STA     L17F7
+        STA     ulaPalette
+.L1A5A               
+        CLI
+        RTS
+                    
+.L1A5C               
+        LDA     ($7D),Y
+        BPL     L1A9A
+        LDA     #$D7            ; Black
+        STA     L17F6
+        STA     ulaPalette
+        dec     room_number
+        JSR     L186D
+        INC     room_number
+        LDY     #$1E
+        LDA     ($7D),Y
+        BPL     L1A9A
+        LDY     #$21
+        LDA     ($7D),Y
+        BPL     L1A9A
+        LDA     #$E7            ; Black
+        STA     L17F7
+        STA     ulaPalette
+        JSR     L186D
+        LDY     #$03
+        LDA     ($7D),Y
+        BPL     L1A9A
+        LDY     #$06
+        LDA     ($7D),Y
+        BPL     L1A9A
+        LDA     #$F7            ; Black
+        STA     L17F8
+        STA     ulaPalette
+.L1A9A               
+        CLI
+        RTS
+                    
+.L1A9C               
+        LDA     ($7D),Y
+        BPL     L1ACC
+        LDY     #$03
+        LDA     ($7D),Y
+        BPL     L1ACC
+        STA     $29
+        LDY     #$06
+        LDA     ($7D),Y
+        BPL     L1ACC
+        LDA     #$D7            ; Black
+        STA     L17F6
+        STA     ulaPalette
+        LDY     #$09
+        LDA     ($7D),Y
+        BPL     L1ACC
+.L1ABC              
+        LDA     #$E7            ; Black
+        STA     L17F7
+        STA     ulaPalette
+        LDA     #$F7            ; Black
+        STA     L17F8
+        STA     ulaPalette
+.L1ACC               
+        CLI
+        RTS
 
 ;-------------------------------------------------------------------------
 ; DrawScoreandHighscore
@@ -4153,7 +4384,7 @@ L119C = L119A+2
         STA     score2
         STA     score3
         JSR     DrawScoreandHighscore
-
+.L1F7E
         LDA     #$96
         STA     L007B
         LDA     #$1F
@@ -5442,7 +5673,7 @@ L119C = L119A+2
         STA     L004C
         RTS
 
-.L4C58  ; DATA ?
+.L4C58  ; DATA - seems to be EQUB text?
         EQUB    $37
         EQUB    $3A,$45,$51,$55,$42,$20,$39,$38
         EQUB    $0D,$21,$F2,$05,$20,$0D,$21,$FC
