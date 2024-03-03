@@ -2705,9 +2705,8 @@ L119C = L119A+2
         RTS
 }
 ;-------------------------------------------------------------------------
-
+        ; DATA ?
         EQUB    $01
-
         EQUB    $2E,$05,$1A,$9C,$83,$2E,$05,$1A
         EQUB    $9C,$01,$2E,$05,$1A,$9C,$05,$2F
         EQUB    $04,$1A,$82,$6D,$2F,$04,$1A,$82
@@ -2769,12 +2768,12 @@ L119C = L119A+2
         RTS
 }
 ;-------------------------------------------------------------------------
-; ???
+; SetRoomPalette
 ;-------------------------------------------------------------------------
 ; On entry  : 
 ; On exit   : 
 ;-------------------------------------------------------------------------
-.L172D
+.SetRoomPalette
         SEI
         LDA     room_number
         ASL     A
@@ -2786,72 +2785,85 @@ L119C = L119A+2
         JMP     (L007B)
         ; return
 ;-------------------------------------------------------------------------
-
+; RoomPalete JMP Table Data
+;-------------------------------------------------------------------------
 .L173F
         EQUB    $5C
 .L1740
-        EQUB    $17     ; room 1 address   
-        EQUB    $57,$17 ; room 2 address
-        EQUB    $95,$17 ; room 3 address
-        EQUB    $57,$17 ; room 4 address
-        EQUB    $5F,$17 ; room 5 address
-        EQUB    $72,$17 ; room 6 address
-        EQUB    $81,$17 ; room 7 address
-        EQUB    $5C,$17 ; room 8 address
-        EQUB    $81,$17 ; room 9 address
-        EQUB    $A6,$17 ; room 10 address
-        EQUB    $AC,$17 ; room 11 address
-        EQUB    $5F,$17 ; room 12 address
+        EQUB    $17             ; room 1 address   
+        EQUB    $57,$17         ; room 2 address
+        EQUB    $95,$17         ; room 3 address
+        EQUB    $57,$17         ; room 4 address
+        EQUB    $5F,$17         ; room 5 address
+        EQUB    $72,$17         ; room 6 address
+        EQUB    $81,$17         ; room 7 address
+        EQUB    $5C,$17         ; room 8 address
+        EQUB    $81,$17         ; room 9 address
+        EQUB    $A6,$17         ; room 10 address
+        EQUB    $AC,$17         ; room 11 address
+        EQUB    $5F,$17         ; room 12 address
 
-        ; Room Code to change the palette
-.L1757
-        LDA     #$96
+;-------------------------------------------------------------------------
+; Room Code to change the palette
+;-------------------------------------------------------------------------     
+.L1757  ; room 2, 4
+        LDA     #$96            ; Red
         STA     L17F2
-.L175C
+
+.L175C  ; room 1, 8
         JMP     L17DC
-.L175F
-        LDA     #$FF
+        ; return
+
+.L175F  ; room 5, 12
+        LDA     #$FF    
         STA     L0011
         JSR     L17C0
-        LDA     #$D6
+        LDA     #$D6            ; Red
         STA     L17F6
-        LDA     #$E6
+        LDA     #$E6            ; Red
         STA     L17F7
         BNE     L17DC
-.L1772
-        LDA     #$D3
+
+.L1772  ; room 6
+        LDA     #$D3            ; Blue
         STA     L17F6
         LDA     L0011
         BNE     L17B1
         JSR     L17C0
         JMP     L1795
-.L1781    
-        LDA     #$96
+
+.L1781  ; room 7, 9  
+        LDA     #$96            ; Red
         STA     L17F2
-        LDA     #$A7
+        LDA     #$A7            ; Black
         STA     L17F3
-        LDA     #$B7
+        LDA     #$B7            ; Black
         STA     L17F4
-        LDA     #$C7
+        LDA     #$C7            ; Black
         STA     L17F5
-.L1795   
-        LDA     #$D3
+
+.L1795  ; room 3 
+        LDA     #$D3            ; Blue
         STA     L17F6
-        LDA     #$E3
+        LDA     #$E3            ; Blue
         STA     L17F7
-        LDA     #$F3
+        LDA     #$F3            ; Blue
         STA     L17F8
         BNE     L17DC
+
+.L17A6  ; room 10
         JSR     L17C0
         JMP     L1795
-.L17AC
-        LDA     #$D3
+
+.L17AC  ; room 11
+        LDA     #$D3            ; Blue
         STA     L17F6
+
 .L17B1               
         JSR     L17C0
-        LDA     #$E6
+        LDA     #$E6            ; Red
         STA     L17F7
-        LDA     #$F0
+        LDA     #$F0            ; White
         STA     L17F8
         BNE     L17DC
 .L17C0               
@@ -2859,13 +2871,13 @@ L119C = L119A+2
         STX     palette_timer
         DEX
         STX     L0026
-        LDX     #$96
+        LDX     #$96            ; Red
         STX     L17F2
-        LDX     #$AD
+        LDX     #$AD            ; Green
         STX     L17F3
-        LDX     #$BC
+        LDX     #$BC            ; Yellow
         STX     L17F4
-        LDX     #$CB
+        LDX     #$CB            ; Blue
         STX     L17F5
         RTS         
 
@@ -2878,7 +2890,6 @@ L119C = L119A+2
         BPL     L17DE
         CLI
         RTS
-
 
 ;-------------------------------------------------------------------------
 ; PaletteData
@@ -3570,7 +3581,7 @@ L119C = L119A+2
 
         JSR     L1C67
         JSR     L1883
-        JSR     L172D
+        JSR     SetRoomPalette
         JMP     L194B
         ; return
 
