@@ -591,7 +591,7 @@ L0386   = $0386
         STA     L0086
         LDX     #$80
         BNE     L0B3D
-
+.L0B4D
         LDA     #$87
         CMP     L0087
         BEQ     L0B67
@@ -748,20 +748,23 @@ L0386   = $0386
         STA     L007C
         JMP     (L007B)
         ; return
-;-------------------------------------------------------------------------
 
-.L0C13  ; DATA
+;-------------------------------------------------------------------------
+; Jump Table Data
+;-------------------------------------------------------------------------
+.L0C13
         EQUB    $23
 
 .L0C14
         EQUB    $0C             ; $0C23
-        EQUB    $AF,$09
-        EQUB    $39,$0A
-        EQUB    $99,$0A
-        EQUB    $D1,$0A
-        EQUB    $FC,$0A
-        EQUB    $16,$15
-        EQUB    $4D,$0B
+        EQUB    $AF,$09         ; $09AF
+        EQUB    $39,$0A         ; $0A39
+        EQUB    $99,$0A         ; $0A99
+        EQUB    $D1,$0A         ; $0AD1
+        EQUB    $FC,$0A         ; $0AFC
+        EQUB    $16,$15         ; $1516
+        EQUB    $4D,$0B         ; $0B4d
+;-------------------------------------------------------------------------
         
 .L0C23               
         LDA $8f
@@ -803,21 +806,22 @@ L0386   = $0386
         LDA $14
         BNE L0C65
         JMP L140E
+        ; return
         
 .L0C65   
-        LDA #$00
+        LDA #$00                ; Left keypress
         JSR ReadKey
         BEQ L0C8B
-        LDA #$01
+        LDA #$01                ; Right keypress
         JSR ReadKey
         BEQ L0C8B
-        LDA #$02
+        LDA #$02                ; Up keypress
         JSR ReadKey
         BNE L0C7F
         JSR L0D7A
         BEQ L0C5A
 .L0C7F   
-        LDA #$03
+        LDA #$03                ; Down keypress
         JSR ReadKey
         BNE L0C8B
         JSR L0DA2
@@ -828,12 +832,14 @@ L0386   = $0386
         LDA $88
         BEQ L0C96
         JMP L0CEA
+        ; return
         
 .L0C96   
         JSR L0F32
         STA $8b
         BEQ L0CA0
         JMP L0DC2
+        ; return
         
 .L0CA0   
         LDA $96
@@ -849,46 +855,49 @@ L0386   = $0386
 .L0CAE   
         LDA $8f
         BNE L0CEA
-        LDA #$05
+        LDA #$05                ; Duck Keypress
         JSR ReadKey
         BEQ L0D1F
-        LDA #$04
+        LDA #$04                ; Chop / Kick Keypress
         JSR ReadKey
         BNE L0CCE
-        LDA #$00
+        LDA #$00                ; Left keypress
         JSR ReadKey
         BEQ L0D1C
-        LDA #$01
+        LDA #$01                ; Right keypress
         JSR ReadKey
         BEQ L0D1C
 .L0CCE   
-        LDA #$02
+        LDA #$02                ; Up keypress
         JSR ReadKey
         BNE L0CE3
-        LDA #$00
+        LDA #$00                ; Left keypress
         JSR ReadKey
         BEQ L0D19
-        LDA #$01
+        LDA #$01                ; Right keypress
         JSR ReadKey
         BEQ L0D19
 .L0CE3   
-        LDA #$04
+        LDA #$04                ; Chop / Kick keypress
         JSR ReadKey
         BEQ L0D16
 .L0CEA   
-        LDA #$00
+        LDA #$00                ; Left keypress
         JSR ReadKey
         BNE L0CF4
         JMP L0B20
+        ; return
         
 .L0CF4   
-        LDA #$01
+        LDA #$01                ; Right keypress
         JSR ReadKey
         BNE L0CFE
         JMP L0D22
+        ; return
         
 .L0CFE   
         JMP L0D05
+        ; return
         
 .L0D01
         LDA     #$00
@@ -907,12 +916,16 @@ L0386   = $0386
         RTS
 .L0D16
         JMP     L0AD1
+        ; return
 .L0D19
         JMP     L09AF
+        ; return
 .L0D1C
         JMP     L0A39
+        ; return
 .L0D1F
         JMP     L0A99
+        ; return
 .L0D22
         LDA     L0088
         BNE     L0D2C
@@ -1066,7 +1079,10 @@ L0386   = $0386
         ; return
 
         ; Sound Data $0DE2
-        EQUB    $12,$00,$11,$00,$F1,$FF,$00,$00
+        EQUB    $12,$00         ; Channel
+        EQUB    $11,$00         ; Volume / Envelope No.
+        EQUB    $F1,$FF         ; Pitch
+        EQUB    $00,$00         ; Duration
 
 .L0DEA
         LDA     L0086
@@ -1529,7 +1545,7 @@ L0386   = $0386
         JMP     L094E
         ; return
 
-        ; DATA
+        ; DATA ???
         EQUB    $31
         EQUB    $0D,$04,$1A,$14,$44,$45,$58,$3A
         EQUB    $42,$4E,$45,$20,$6C,$6F,$63,$5F
@@ -2197,7 +2213,10 @@ L119C = L119A+2
         RTS
 
         ; Sound Data $13FB
-        EQUB    $11,$00,$01,$00,$0A,$00,$01,$00
+        EQUB    $11,$00         ; Channel
+        EQUB    $01,$00         ; Volumne / Envelope No.
+        EQUB    $0A,$00         ; Pitch
+        EQUB    $01,$00         ; Duration
     
 .L1403
         LDA     #$00
