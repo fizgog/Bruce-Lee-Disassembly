@@ -200,7 +200,7 @@ L0386   = $0386
         BNE     L0975
 
         JSR     L1105
-        JSR     L1B5A
+        JSR     PlotSpriteBruce
         JSR     L110C
         JSR     L1113
 
@@ -1486,11 +1486,11 @@ L0386   = $0386
         LDA     L1592
 .L10AE
         JSR     L1324
-        JSR     L1B21
+        JSR     EraseSprite
         JSR     L1113
-        JSR     L10E6
+        JSR     L10E6                   ; move ninja ?
         JSR     L1105
-        JSR     L1B5A
+        JSR     PlotSpriteBruce
         JSR     L110C
         JMP     L1DDE
         ; return
@@ -1500,8 +1500,8 @@ L0386   = $0386
 
         LDA     L0081
         JSR     L1324
-        JSR     L1B21
-        JSR     L1B5A
+        JSR     EraseSprite
+        JSR     PlotSpriteBruce
         JSR     L110C
 
 .L10D7
@@ -1523,8 +1523,9 @@ L0386   = $0386
 
         LDX     #$FE
         STX     L0093
-.L10F1
-        JSR     L1B21
+
+.L10F1  ; Erase green ninja
+        JSR     EraseSprite
 
 .L10F4
         LDX     L0093
@@ -1536,7 +1537,7 @@ L0386   = $0386
         STX     L0093
         STX     L0089
 .L10FF
-        JSR     L1B5A
+        JSR     PlotSpriteBruce
 
 .L1102
         JMP     L112D
@@ -1863,7 +1864,13 @@ L119C = L119A+2
         LDA     #$00
         RTS
 
-.L12C4
+;-------------------------------------------------------------------------
+; EraseMaskedSprite
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.EraseMaskedSprite
         JSR     L1159
 
 .L12C7
@@ -2618,17 +2625,17 @@ L119C = L119A+2
         RTS
 }
 ;-------------------------------------------------------------------------
-; Clear Palette
+; Set Palette
 ;-------------------------------------------------------------------------
 ; On entry  : 
 ; On exit   : 
 ;-------------------------------------------------------------------------
-.ClearPalette
+.SetPalette
 {
-        RTS     ;SEI    ; NB Altered to see screen redrawing
+        SEI    
         LDX     #$0F
 .loop
-        LDA     L17E9,X
+        LDA     PaletteData,X
         AND     #$F0
         ORA     #$07
         STA     ulaPalette
@@ -2733,35 +2740,55 @@ L119C = L119A+2
         STX     L17F4
         LDX     #$CB
         STX     L17F5
-        RTS            
+        RTS         
+
 .L17DC              
         LDX     #$0F
 .L17DE               
-        LDA     L17E9,X
+        LDA     PaletteData,X
         STA     ulaPalette
         DEX
         BPL     L17DE
         CLI
         RTS
 
-.L17E9  ; Palette Data
-        EQUB    $07,$16,$25,$34,$43,$52,$61,$70
-        EQUB    $8F
 
+;-------------------------------------------------------------------------
+; PaletteData
+;-------------------------------------------------------------------------
+; X0 = X8 = White
+; X1 = X9 = Cyan      
+; X2 = XA = Magenta   
+; X3 = XB = Blue      
+; X4 = XC = Yellow    
+; X5 = XD = Green     
+; X6 = XE = Red       
+; X7 = XF = Black     
+;-------------------------------------------------------------------------
+.PaletteData  
+        EQUB    $07     ; Black
+        EQUB    $16     ; Red
+        EQUB    $25     ; Green
+        EQUB    $34     ; Yellow
+        EQUB    $43     ; Blue
+        EQUB    $52     ; Magenta
+        EQUB    $61     ; Cyan
+        EQUB    $70     ; White
+        EQUB    $8F     ; Black
 .L17F2
-        EQUB    $96
+        EQUB    $96     ; Red
 .L17F3
-        EQUB    $AD
+        EQUB    $AD     ; Green
 .L17F4
-        EQUB    $BC
+        EQUB    $BC     ; Yellow
 .L17F5  
-        EQUB    $CB
+        EQUB    $CB     ; Blue
 .L17F6
-        EQUB    $D3
+        EQUB    $D3     ; Blue
 .L17F7
-        EQUB    $E3
+        EQUB    $E3     ; Blue
 .L17F8
-        EQUB    $F3
+        EQUB    $F3     ; Blue
 
 ;-------------------------------------------------------------------------
 
@@ -2894,7 +2921,7 @@ L119C = L119A+2
         JSR     CalcAddress
 
         LDA     #$11
-        JSR     DrawChar
+        JSR     PlotSprite
 
         JSR     L1D16
 
@@ -3004,20 +3031,20 @@ L119C = L119A+2
         STA     L000D
         LDA     (L007D),Y
         STA     L000E
-        JSR     L1B21
+        JSR     EraseSprite                   ; erase bruce ?
 
         JSR     CalcAddress
 
         LDA     L000D
         STA     L0004
-        LDA     #$12
-        JSR     DrawChar
 
-        JSR     L1B5A
-        JSR     Add125
+        LDA     #$12                    ; is lantern #$12 ?
+        JSR     PlotSprite              ; erase lantern ?
+        JSR     PlotSpriteBruce         ; draw bruce
+        JSR     Add125                  ; add score
 
         INC     L0030
-        JMP     L194B
+        JMP     L194B                   ; move bruce along (jumping)
         ; return
 
 .L194A
@@ -3154,17 +3181,21 @@ L119C = L119A+2
         LSR     A
         CLC
         ADC     #$14
-        JSR     DrawChar
+        JSR     PlotSprite
 
         PLA
         AND     #$0F
         CLC
         ADC     #$14
-        JSR     DrawChar
+        JSR     PlotSprite
         RTS
 ;-------------------------------------------------------------------------
-
-.L1B21
+; EraseSprite
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.EraseSprite
         LDA     L0097
         STA     L0002
         LDA     L0098
@@ -3179,8 +3210,9 @@ L119C = L119A+2
         STA     L0008
         LDA     L0085
         STA     L000C
-        JMP     L12C4
+        JMP     EraseMaskedSprite
         ; return
+;-------------------------------------------------------------------------
 
 .L1B40
         LDA     L0080
@@ -3198,7 +3230,13 @@ L119C = L119A+2
         STA     L0083
         RTS
 
-.L1B5A
+;-------------------------------------------------------------------------
+; PlotSpriteBruce? PlotSpriteMask? PlotSpriteBruceFirstTimeOnScreen?
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
+.PlotSpriteBruce
         JSR     L1B40
 
         LDA     L008B
@@ -3363,7 +3401,7 @@ L119C = L119A+2
         LDA     #$00
         STA     L0020
 
-        JSR     ClearPalette
+        JSR     SetPalette
         JSR     ClearScreen
 
         LDA     room_number
@@ -3458,7 +3496,7 @@ L119C = L119A+2
         BEQ     L1CBE
 
         LDA     L001C
-        JSR     DrawChar
+        JSR     PlotSprite
 
 .L1CBE
         JSR     L1D16
@@ -3748,7 +3786,7 @@ L119C = L119A+2
         LDA     (L0023),Y
         INY
         STY     L007E
-        JSR     DrawChar
+        JSR     PlotSprite
 
         JSR     L1E8E
 
@@ -3782,7 +3820,7 @@ L119C = L119A+2
         LDA     #$38
         STA     L0003
         STA     L0004
-        JMP     L12C4
+        JMP     EraseMaskedSprite
         ; return
 
 .L1E8E
@@ -3990,12 +4028,12 @@ L119C = L119A+2
         EQUB    $00,$00,$01,$05,$D2,$16,$00
 
 ;-------------------------------------------------------------------------
-; DrawChar
+; PlotSprite
 ;-------------------------------------------------------------------------
 ; On entry  : 
 ; On exit   : 
 ;-------------------------------------------------------------------------
-.DrawChar
+.PlotSprite
         STA     L007B
         TAX
         ASL     A
