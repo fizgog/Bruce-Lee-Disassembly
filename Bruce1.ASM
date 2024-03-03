@@ -57,7 +57,7 @@ L0021   = $0021
 L0022   = $0022
 L0023   = $0023
 L0024   = $0024
-L0025   = $0025
+palette_timer           = $0025
 L0026   = $0026
 speed_counter           = $0028
 L0029   = $0029
@@ -754,40 +754,146 @@ L0386   = $0386
         EQUB    $23
 
 .L0C14
-        EQUB    $0C,$AF,$09,$39,$0A,$99,$0A,$D1
-        EQUB    $0A,$FC,$0A,$16,$15,$4D,$0B,$A5
-        EQUB    $8F,$F0,$02,$C6,$8F,$18,$A5,$81
-        EQUB    $69,$12,$85,$0E,$A5,$80,$85,$0D
-        EQUB    $20,$07,$20,$18,$A5,$80,$69,$03
-        EQUB    $85,$0D,$20,$07,$20,$20,$5E,$0C
-        EQUB    $A5,$89,$D0,$12,$20,$05,$10,$D0
-        EQUB    $0D,$A5,$88,$48,$20,$F5,$0F,$68
-        EQUB    $A6,$88,$30,$03,$85,$88,$60,$C6
-        EQUB    $81,$60,$A5,$14,$D0,$03,$4C,$0E
-        EQUB    $14,$A9,$00,$20,$EB,$0B,$F0,$1F
-        EQUB    $A9,$01,$20,$EB,$0B,$F0,$18,$A9
-        EQUB    $02,$20,$EB,$0B,$D0,$05,$20,$7A
-        EQUB    $0D,$F0,$DB,$A9,$03,$20,$EB,$0B
-        EQUB    $D0,$05,$20,$A2,$0D,$F0,$CF,$A9
-        EQUB    $00,$85,$8B,$A5,$88,$F0,$03,$4C
-        EQUB    $EA,$0C,$20,$32,$0F,$85,$8B,$F0
-        EQUB    $03,$4C,$C2,$0D,$A5,$96,$F0,$01
-        EQUB    $60,$A5,$86,$4A,$F0,$04,$A5,$92
-        EQUB    $85,$86,$A5,$8F,$D0,$38,$A9,$05
-        EQUB    $20,$EB,$0B,$F0,$66,$A9,$04,$20
-        EQUB    $EB,$0B,$D0,$0E,$A9,$00,$20,$EB
-        EQUB    $0B,$F0,$55,$A9,$01,$20,$EB,$0B
-        EQUB    $F0,$4E,$A9,$02,$20,$EB,$0B,$D0
-        EQUB    $0E,$A9,$00,$20,$EB,$0B,$F0,$3D
-        EQUB    $A9,$01,$20,$EB,$0B,$F0,$36,$A9
-        EQUB    $04,$20,$EB,$0B,$F0,$2C,$A9,$00
-        EQUB    $20,$EB,$0B,$D0,$03,$4C,$20,$0B
-        EQUB    $A9,$01,$20,$EB,$0B,$D0,$03,$4C
-        EQUB    $22,$0D,$4C,$05,$0D
-
+        EQUB    $0C             ; $0C23
+        EQUB    $AF,$09
+        EQUB    $39,$0A
+        EQUB    $99,$0A
+        EQUB    $D1,$0A
+        EQUB    $FC,$0A
+        EQUB    $16,$15
+        EQUB    $4D,$0B
+        
+.L0C23               
+        LDA $8f
+        BEQ L0C29
+        DEC $8f
+.L0C29               
+        CLC
+        LDA $81
+        ADC #$12
+        STA $0e
+        LDA $80
+        STA $0d
+        JSR L2007
+        CLC
+        LDA $80
+        ADC #$03
+        STA $0d
+        JSR L2007
+        JSR L0C5E
+        LDA $89
+        BNE L0C5A
+        JSR L1005
+        BNE L0C5A
+        LDA $88
+        PHA
+        JSR L0FF5
+        PLA
+        LDX $88
+        BMI L0C5B
+        STA $88
+.L0C5A   
+        RTS
+        
+.L0C5B   
+        DEC $81
+        RTS
+        
+.L0C5E   
+        LDA $14
+        BNE L0C65
+        JMP L140E
+        
+.L0C65   
+        LDA #$00
+        JSR ReadKey
+        BEQ L0C8B
+        LDA #$01
+        JSR ReadKey
+        BEQ L0C8B
+        LDA #$02
+        JSR ReadKey
+        BNE L0C7F
+        JSR L0D7A
+        BEQ L0C5A
+.L0C7F   
+        LDA #$03
+        JSR ReadKey
+        BNE L0C8B
+        JSR L0DA2
+        BEQ L0C5A
+.L0C8B   
+        LDA #$00
+        STA $8b
+        LDA $88
+        BEQ L0C96
+        JMP L0CEA
+        
+.L0C96   
+        JSR L0F32
+        STA $8b
+        BEQ L0CA0
+        JMP L0DC2
+        
+.L0CA0   
+        LDA $96
+        BEQ L0CA5
+        RTS
+        
+.L0CA5   
+        LDA $86
+        LSR A
+        BEQ L0CAE
+        LDA $92
+        STA $86
+.L0CAE   
+        LDA $8f
+        BNE L0CEA
+        LDA #$05
+        JSR ReadKey
+        BEQ L0D1F
+        LDA #$04
+        JSR ReadKey
+        BNE L0CCE
+        LDA #$00
+        JSR ReadKey
+        BEQ L0D1C
+        LDA #$01
+        JSR ReadKey
+        BEQ L0D1C
+.L0CCE   
+        LDA #$02
+        JSR ReadKey
+        BNE L0CE3
+        LDA #$00
+        JSR ReadKey
+        BEQ L0D19
+        LDA #$01
+        JSR ReadKey
+        BEQ L0D19
+.L0CE3   
+        LDA #$04
+        JSR ReadKey
+        BEQ L0D16
+.L0CEA   
+        LDA #$00
+        JSR ReadKey
+        BNE L0CF4
+        JMP L0B20
+        
+.L0CF4   
+        LDA #$01
+        JSR ReadKey
+        BNE L0CFE
+        JMP L0D22
+        
+.L0CFE   
+        JMP L0D05
+        
 .L0D01
         LDA     #$00
         STA     L0088
+.L0D05
         LDA     L0088
         BNE     L0D15
 
@@ -799,13 +905,14 @@ L0386   = $0386
         STA     L0087
 .L0D15
         RTS
-
-        ; Should never get here!
+.L0D16
         JMP     L0AD1
+.L0D19
         JMP     L09AF
+.L0D1C
         JMP     L0A39
+.L0D1F
         JMP     L0A99
-
 .L0D22
         LDA     L0088
         BNE     L0D2C
@@ -1079,7 +1186,6 @@ L0386   = $0386
         JMP     L0E8D
         ; return
 
-        ; Should never get here!
         JSR     L0E95
 
 .L0E8C
@@ -1183,7 +1289,6 @@ L0386   = $0386
         JMP     L0E5B
         ; return
 
-        ; Should never get here!
         LDA     #$FF
         RTS
 
@@ -2104,7 +2209,7 @@ L119C = L119A+2
         STA     L0086
         JMP     L0A39
         ; return
-
+.L140E
         JSR     L14F2
 
         LDA     L008F
@@ -2269,7 +2374,6 @@ L119C = L119A+2
         JMP     L0B20
         ; return
 
-        ; Should never get here!
         BEQ     L14E2
         RTS
 
@@ -2456,7 +2560,7 @@ L119C = L119A+2
         BPL     L15DD
 
         LDA     #$01
-        STA     L0025
+        STA     palette_timer
 .L15E7
         JSR     L1883
 
@@ -2646,7 +2750,11 @@ L119C = L119A+2
         RTS
 }
 ;-------------------------------------------------------------------------
-
+; ???
+;-------------------------------------------------------------------------
+; On entry  : 
+; On exit   : 
+;-------------------------------------------------------------------------
 .L172D
         SEI
         LDA     room_number
@@ -2729,7 +2837,7 @@ L119C = L119A+2
         BNE     L17DC
 .L17C0               
         LDX     #$01
-        STX     L0025
+        STX     palette_timer
         DEX
         STX     L0026
         LDX     #$96
@@ -2797,11 +2905,12 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 .AnimateRoomPalette
         SEI
-        DEC     L0025
+        DEC     palette_timer           ; palette timer
         BNE     L1841
 
         LDA     #$03
-        STA     L0025
+        STA     palette_timer
+
         LDA     room_number
         CMP     #$05            ; room 6
         BEQ     L1818
@@ -2845,7 +2954,7 @@ L119C = L119A+2
         CLI
         RTS
 ;-------------------------------------------------------------------------
-; Standard rooms paltte
+; Standard rooms palatte
 ;-------------------------------------------------------------------------
 .L1843
         CMP     #$08
@@ -2868,7 +2977,7 @@ L119C = L119A+2
         DEX
 .L185B
         LDA     #$20
-        STA     L0025
+        STA     palette_timer
 .L185F
         LDA     L1867,X
         STA     ulaPalette
@@ -5196,39 +5305,53 @@ L119C = L119A+2
 
         SEI
         LDX     #$0D
-.L4BAE
+.crtc_loop
         STX     crtcAddr
-        LDA     L4BE0 + OFFSET,X
+        LDA     crtcRegs + OFFSET,X
         STA     crtcData
         DEX
-        BPL     L4BAE
+        BPL     crtc_loop
 
-        LDA     #$14
-        STA     ulaMode         ; Mode 2
+        LDA     #$14            ; Mode 2
+        STA     ulaMode         
         CLI
+
         LDA     #$00
-        STA     highscore1      ; Hiscore
+        STA     highscore1      ; Hiscore (right to left)
         STA     highscore2           
         STA     highscore3
-        STA     score1          ; score
-        STA     score2          ; score
-        STA     score3          ; score
+        STA     score1          ; score (rightto left)
+        STA     score2          
+        STA     score3          
         STA     walking_sound_delay
+
         LDA     #$F1
         STA     sound_flag
 
         LDA     #$08
         LDX     #$EE
         LDY     #$4B            ; $4BEE
-        JSR     OSWORD          ; OSWORD   8 - Define an envelope 
+        JSR     OSWORD          ; OSWORD 8 - Define an envelope 
         JMP     L0900           ; Jump to start of relocated game
         ; return
 
-.L4BE0
-        EQUB    $7F,$50,$62,$28,$26,$00,$1D,$21
-        EQUB    $01,$07,$00,$08,$06,$F0
+.crtcRegs
+        EQUB    $7F     ; R0  horizontal total
+        EQUB    $50     ; R1  horizontal displayed
+        EQUB    $62     ; R2  horizontal position
+        EQUB    $28     ; R3  sync width
+        EQUB    $26     ; R4  vertical total
+        EQUB    $00     ; R5  vertical total adjust
+        EQUB    $1D     ; R6  vertical displayed
+        EQUB    $21     ; R7  vertical position
+        EQUB    $01     ; R8  interlace off
+        EQUB    $07     ; R9  scanlines per row
+        EQUB    $00     ; R10 cursor start
+        EQUB    $08     ; R11 cursor end
+        EQUB    $06     ; R12 screen start address, high
+        EQUB    $F0     ; R13 screen start address, low
 
-        ; Envelope Data $4BEE
+.L4BEE  ; Envelope Data $4BEE
         EQUB    $01,$00,$00,$00,$00,$00,$00,$00
         EQUB    $7E,$82,$00,$00,$7E,$00,$00
 
