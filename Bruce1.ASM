@@ -214,7 +214,7 @@ L0386   = $0386
         JSR     L1059
 
 .L0975
-        JSR     L17F9
+        JSR     AnimateRoomPalette
 
         LDA     room_number
         CMP     #$09
@@ -2791,9 +2791,11 @@ L119C = L119A+2
         EQUB    $F3     ; Blue
 
 ;-------------------------------------------------------------------------
-; Room Palette Data?
+; AnimatedRoomPalette
 ;-------------------------------------------------------------------------
-.L17F9
+; Toggle colours between black abd white
+;-------------------------------------------------------------------------
+.AnimateRoomPalette
         SEI
         DEC     L0025
         BNE     L1841
@@ -2801,40 +2803,40 @@ L119C = L119A+2
         LDA     #$03
         STA     L0025
         LDA     room_number
-        CMP     #$05
+        CMP     #$05            ; room 6
         BEQ     L1818
 
-        CMP     #$09
+        CMP     #$09            ; room 10
         BEQ     L1818
 
-        CMP     #$0A
+        CMP     #$0A            ; room 11
         BEQ     L1818
 
-        CMP     #$0B
+        CMP     #$0B            ; room 12
         BEQ     L1818
 
-        CMP     #$04
+        CMP     #$04            ; room 5
         BNE     L1843
 
-.L1818
+.L1818  ; Animate room palette                    
         LDA     L0026
         EOR     #$FF
         STA     L0026
         BNE     L182D
 
-        LDA     #$90
+        LDA     #$90            ; White
         STA     ulaPalette
-        LDA     #$A0
-        LDX     #$B7
-        LDY     #$C7
+        LDA     #$A0            ; White
+        LDX     #$B7            ; Black
+        LDY     #$C7            ; Black
         BNE     L1838
 
 .L182D
-        LDA     #$97
+        LDA     #$97            ; Black
         STA     ulaPalette
-        LDA     #$A7
-        LDX     #$B0
-        LDY     #$C0
+        LDA     #$A7            ; Black
+        LDX     #$B0            ; White
+        LDY     #$C0            ; White
 .L1838
         STA     ulaPalette
         STX     ulaPalette
@@ -2842,7 +2844,9 @@ L119C = L119A+2
 .L1841
         CLI
         RTS
-
+;-------------------------------------------------------------------------
+; Standard rooms paltte
+;-------------------------------------------------------------------------
 .L1843
         CMP     #$08
         BEQ     L184B
@@ -2874,7 +2878,12 @@ L119C = L119A+2
 ;-------------------------------------------------------------------------
 
 .L1867  ; Palette data
-        EQUB    $A7,$A0,$B0,$C0,$C7,$B7
+        EQUB    $A7     ; Black
+        EQUB    $A0     ; White
+        EQUB    $B0     ; White
+        EQUB    $C0     ; White
+        EQUB    $C7     ; Black
+        EQUB    $B7     ; Black
 
 ;-------------------------------------------------------------------------
 
