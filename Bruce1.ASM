@@ -66,7 +66,7 @@ rand1   = $002A
 rand2   = $002B
 rand3   = $002C
 
-L0030   = $0030
+lantern_counter         = $0030
 in_play                 = $0031 ; $FF not playing, $00 playing
 L0032   = $0032
 L0033   = $0033
@@ -821,7 +821,7 @@ L0386   = $0386
         EQUB    $D1,$0A         ; $0AD1
         EQUB    $FC,$0A         ; $0AFC
         EQUB    $16,$15         ; $1516
-        EQUB    $4D,$0B         ; $0B4d
+        EQUB    $4D,$0B         ; $0B4D
 ;-------------------------------------------------------------------------
         
 .L0C23               
@@ -2624,7 +2624,7 @@ L119C = L119A+2
 .L15CB
         LDA     #$00
         STA     L0026
-        STA     L0030
+        STA     lantern_counter
         STA     L0012
         STA     L0011
         STA     L0029
@@ -3239,7 +3239,7 @@ L119C = L119A+2
         STA     L000D
         LDA     (L007D),Y
         STA     L000E
-        JSR     EraseSprite                   ; erase bruce ?
+        JSR     EraseSprite             ; erase bruce ?
 
         JSR     CalcAddress
 
@@ -3251,7 +3251,7 @@ L119C = L119A+2
         JSR     PlotSpriteBruce         ; draw bruce
         JSR     Add125                  ; add score
 
-        INC     L0030
+        INC     lantern_counter
         JMP     L194B                   ; move bruce along (flying jump)
         ; return
 
@@ -3940,9 +3940,8 @@ L119C = L119A+2
         RTS
 
         ; DATA ?
-        EQUB    $03
-        EQUB    $34,$20,$F2,$0B,$2E,$41,$20,$F1
-        EQUB    $02,$F3
+        EQUB    $03,$34,$20,$F2,$0B,$2E,$41,$20
+        EQUB    $F1,$02,$F3
 
 .L1D16
         LDA     L000D
