@@ -15,7 +15,7 @@
 NATIVE_ADDR = &0900 ; address at which code will relocate to
 RELOAD_ADDR = &1900 ; address at which code will load
 
-OFFSET  = RELOAD_ADDR - NATIVE_ADDR
+OFFSET = RELOAD_ADDR - NATIVE_ADDR
 
 INCLUDE "Constants.asm"
 
@@ -892,30 +892,30 @@ L0386   = $0386
         BEQ L0C5A
 .L0C8B   
         LDA #$00
-        STA $8b
-        LDA $88
+        STA L008B
+        LDA L0088
         BEQ L0C96
         JMP L0CEA
         ; return
         
 .L0C96   
         JSR L0F32
-        STA $8b
+        STA L008B
         BEQ L0CA0
         JMP L0DC2
         ; return
         
 .L0CA0   
-        LDA $96
+        LDA L0096
         BEQ L0CA5
         RTS
         
 .L0CA5   
-        LDA $86
+        LDA L0086
         LSR A
         BEQ L0CAE
-        LDA $92
-        STA $86
+        LDA L0092
+        STA L0086
 .L0CAE   
         LDA L008F
         BNE L0CEA
@@ -1296,9 +1296,7 @@ L0386   = $0386
         RTS
 
 .L0EA7
-        EQUB $08
-
-        EQUB $09,$0A,$0B,$0C,$0D,$0E
+        EQUB $08,$09,$0A,$0B,$0C,$0D,$0E
 
 .L0EAE
         LDA L0014
@@ -1673,7 +1671,7 @@ L0386   = $0386
         JSR L1324
         JSR EraseSprite
         JSR L1113
-        JSR L10E6      ; move ninja ?
+        JSR L10E6      ; move yamo ?
         JSR L1105
         JSR PlotSpriteBruce
         JSR L110C
@@ -1709,7 +1707,7 @@ L0386   = $0386
         LDX #$FE
         STX L0093
 
-.L10F1  ; Erase green ninja
+.L10F1  ; Erase green yamo
         JSR EraseSprite
 
 .L10F4
@@ -2175,11 +2173,11 @@ L119C = L119A+2
         STY L0014
         LDA #$AA
         STA L007B,X
-        LDA #$15
+        LDA #$15                ; $15AA
         STA L007C,X
         LDA #$91
         STA L007B,Y
-        LDA #$15
+        LDA #$15                ; $1591
         STA L007C,Y
         LDY #$09
         LDA (L007B),Y
@@ -2228,7 +2226,7 @@ L119C = L119A+2
         LDA #$07
         LDX #$FB
         LDY #$13        ; $13FB
-        JSR OSWORD  ; Play Sound
+        JSR OSWORD      ; Play Sound (Punch / Kick)
 
 .L13BD
         LDY #$06
@@ -2244,7 +2242,7 @@ L119C = L119A+2
         ADC #$01
         STA (L007B),Y
         LDX L0014
-        BEQ L13E1
+        BEQ KnockDownGreenYamo
 
         CMP #$03
         BCC L13FA
@@ -2253,12 +2251,16 @@ L119C = L119A+2
         JMP DrawLives
         ; return
 
-.L13E1  ; Knock down green ninja 75 score
+;-------------------------------------------------------------------------
+; Knock down green yamo
+;-------------------------------------------------------------------------
+.KnockDownGreenYamo  
         SED
         LDA L007F
         CMP #$04
         BEQ L13F6
 
+        ; Kick green yamo 75 points
         CLC
         LDA score1
         ADC #$75
@@ -2268,19 +2270,20 @@ L119C = L119A+2
         JMP Add1000
         ; return
 
-.L13F6
+.L13F6  ; Punch Green yamo 100 points
         CLC
         JMP L18CA
         ; return
 
 .L13FA
         RTS
-
-        ; Sound Data $13FB
+;-------------------------------------------------------------------------
+        ; Sound Data $13FB (used for punch / kick)
         EQUB $11,$00    ; Channel
         EQUB $01,$00    ; Volumne / Envelope No.
         EQUB $0A,$00    ; Pitch
         EQUB $01,$00    ; Duration
+;-------------------------------------------------------------------------
         
 .L1403
         LDA #$00
@@ -2855,18 +2858,18 @@ L119C = L119A+2
 .L173F
         EQUB $5C
 .L1740
-        EQUB $17    ; room 1 address   
-        EQUB $57,$17    ; room 2 address
-        EQUB $95,$17    ; room 3 address
-        EQUB $57,$17    ; room 4 address
-        EQUB $5F,$17    ; room 5 address
-        EQUB $72,$17    ; room 6 address
-        EQUB $81,$17    ; room 7 address
-        EQUB $5C,$17    ; room 8 address
-        EQUB $81,$17    ; room 9 address
-        EQUB $A6,$17    ; room 10 address
-        EQUB $AC,$17    ; room 11 address
-        EQUB $5F,$17    ; room 12 address
+        EQUB $17        ; room 1 address $175C   
+        EQUB $57,$17    ; room 2 address $1757
+        EQUB $95,$17    ; room 3 address $1795
+        EQUB $57,$17    ; room 4 address $1757
+        EQUB $5F,$17    ; room 5 address $175F
+        EQUB $72,$17    ; room 6 address $1772
+        EQUB $81,$17    ; room 7 address $1781
+        EQUB $5C,$17    ; room 8 address $175C
+        EQUB $81,$17    ; room 9 address $1781
+        EQUB $A6,$17    ; room 10 address $17A6
+        EQUB $AC,$17    ; room 11 address $17AC
+        EQUB $5F,$17    ; room 12 address $175F
 
 ;-------------------------------------------------------------------------
 ; Room Code to change the palette
@@ -3090,7 +3093,8 @@ L119C = L119A+2
         EQUB $B7 ; Black
 
 ;-------------------------------------------------------------------------
-
+;
+;-------------------------------------------------------------------------
 .L186D
         LDA room_number
         ASL A
@@ -3245,25 +3249,28 @@ L119C = L119A+2
         STA L000D
         LDA (L007D),Y
         STA L000E
-        JSR EraseSprite    ; erase bruce ?
 
+        JSR EraseSprite    ; erase bruce ?
         JSR CalcAddress
 
         LDA L000D
         STA L0004
 
-        LDA #$12        ; is lantern #$12 ?
-        JSR PlotSprite     ; erase lantern ?
-        JSR PlotSpriteBruce    ; draw bruce
-        JSR Add125     ; add score
+        LDA #$12                ; is lantern #$12 ?
+        JSR PlotSprite          ; erase lantern ?
+        JSR PlotSpriteBruce     ; draw bruce
+        JSR Add125              ; add score
 
-        INC lantern_counter    ; increase lantern count
-        JMP L194B      ; move bruce along (flying jump)
+        INC lantern_counter     ; increase lantern count
+        JMP L194B               ; 
         ; return
 
 .L194A
         RTS
 
+;-------------------------------------------------------------------------
+; ?
+;-------------------------------------------------------------------------
 .L194B
         SEI
         LDA room_number
@@ -3285,7 +3292,7 @@ L119C = L119A+2
         EQUB $86
 
 .L1961
-        EQUB $19    ; $1986
+        EQUB $19        ; $1986
         EQUB $78,$19    ; $1978
         EQUB $88,$19    ; $1988
         EQUB $96,$19    ; $1996
@@ -3299,7 +3306,7 @@ L119C = L119A+2
         EQUB $C2,$19    ; $19C2
         
 .L1978 
-        LDA $30
+        LDA L0030
         CMP #$14
         BCC L1986
         LDA #$97        ; Black
@@ -3319,7 +3326,7 @@ L119C = L119A+2
         RTS
         
 .L1996   
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L19A2
         LDA #$97        ; Black
         STA L17F2
@@ -3330,14 +3337,14 @@ L119C = L119A+2
         
 .L19A4   
         LDY #$03
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L19B2
         LDA #$E7        ; Black
         STA L17F7
         STA ulaPalette
 .L19B2   
         LDY #$00
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L19C0
         LDA #$D7        ; Black
         STA L17F6
@@ -3348,7 +3355,7 @@ L119C = L119A+2
         
 .L19C2   
         LDY #$03
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L19B2
         CLI
         LDX #$1D
@@ -3362,32 +3369,32 @@ L119C = L119A+2
         LDA L0011
         BEQ L19F4
         LDY #$09
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L19EB
         LDX #$D7        ; Black
         STX L17F6
         STX ulaPalette
 .L19EB   
         LDY #$0C
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A1C
         JMP L1ABC
         
 .L19F4   
         LDY #$18
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A1C
         LDY #$1B
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A1C
         LDX #$E7        ; Black
         STX L17F7
         STX ulaPalette
         LDY #$12
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A1C
         LDY #$15
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A1C
         LDX #$F7        ; Black
         STX L17F8
@@ -3399,7 +3406,7 @@ L119C = L119A+2
 .L1A1E   
         LDY #$0F
 .L1A20   
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A31
         DEY
         DEY
@@ -3418,7 +3425,7 @@ L119C = L119A+2
 .L1A34   
         LDY #$09
 .L1A36   
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A31
         DEY
         DEY
@@ -3429,7 +3436,7 @@ L119C = L119A+2
         STA ulaPalette
         LDY #$1B
 .L1A49   
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A5A
         DEY
         DEY
@@ -3443,7 +3450,7 @@ L119C = L119A+2
         RTS
         
 .L1A5C   
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A9A
         LDA #$D7        ; Black
         STA L17F6
@@ -3452,20 +3459,20 @@ L119C = L119A+2
         JSR L186D
         INC room_number
         LDY #$1E
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A9A
         LDY #$21
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A9A
         LDA #$E7        ; Black
         STA L17F7
         STA ulaPalette
         JSR L186D
         LDY #$03
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A9A
         LDY #$06
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1A9A
         LDA #$F7        ; Black
         STA L17F8
@@ -3475,20 +3482,20 @@ L119C = L119A+2
         RTS
         
 .L1A9C   
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1ACC
         LDY #$03
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1ACC
-        STA $29
+        STA L0029
         LDY #$06
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1ACC
         LDA #$D7        ; Black
         STA L17F6
         STA ulaPalette
         LDY #$09
-        LDA ($7D),Y
+        LDA (L007D),Y
         BPL L1ACC
 .L1ABC          
         LDA #$E7        ; Black
@@ -3810,7 +3817,7 @@ L119C = L119A+2
         ASL A
         CLC
         ADC L007B
-        TAX
+        TAX             ; room 1 = 0, room 2 = 6, room 3 = 0C (12)
         LDA L20B0,X
         STA L000F
         LDA L20B1,X
@@ -4614,32 +4621,72 @@ L119C = L119A+2
         JMP L2072
         ; return
 
-        ; Sprite Data Below ?
-.L20B0
-        EQUB $F8
+;-------------------------------------------------------------------------
+; Sprite Offsets
+; 3 function use the following addresses
+; what are the 3 functions!!
+;-------------------------------------------------------------------------
 
+.L20B0  ; function 1 offsets 0, 6, 12 etc
+        EQUB $F8        
 .L20B1
-        EQUB $20
+        EQUB $20        ; $20F8 (room 1) - function 1
 
-.L20B2
-        EQUB $45
-
+.L20B2  ; function 2 offsets 2, 8, 14 etc
+        EQUB $45         
 .L20B3
-        EQUB $21
+        EQUB $21        ; $2145 (room 1) - function 2
 
-.L20B4
+.L20B4  ; function 3 offsets 4, 10, 16 etc
         EQUB $55
-
 .L20B5
-        EQUB $21,$5E,$21,$A6,$21,$B9,$21,$C6
-        EQUB $21,$46,$22,$41,$22,$16,$26,$90
-        EQUB $26,$28,$25,$62,$22,$E1,$22,$E8
-        EQUB $22,$ED,$22,$66,$23,$85,$23,$8A
-        EQUB $23,$EE,$23,$01,$24,$E8,$25,$E7
-        EQUB $25,$E7,$25,$06,$24,$61,$24,$86
-        EQUB $24,$8B,$24,$1C,$25,$28,$25,$29
-        EQUB $25,$D8,$25,$28,$25,$98,$27,$94
-        EQUB $26,$28,$25,$01,$00,$F0,$F1,$1B
+        EQUB $21        ; $2155 (room 1)  - function 3
+        
+        ; Room 2 onwards
+        EQUB $5E,$21    ; $215E (room 2)  - function 1
+        EQUB $A6,$21    ; $21A6 (room 2)  - function 2
+        EQUB $B9,$21    ; $21B9 (room 2)  - function 3
+        EQUB $C6,$21    ; $21C6 (room 3)  - function 1
+        EQUB $46,$22    ; $2246 (room 3)  - function 2
+        EQUB $41,$22    ; $2241 (room 3)  - function 3
+        EQUB $16,$26    ; $2616 (room 4)  - function 1
+        EQUB $90,$26    ; $2690 (room 4)  - function 2
+        EQUB $28,$25    ; $2528 (room 4)  - function 3
+        EQUB $62,$22    ; $2262 (room 5)  - function 1
+        EQUB $E1,$22    ; $22E1 (room 5)  - function 2
+        EQUB $E8,$22    ; $22E8 (room 5)  - function 3
+        EQUB $ED,$22    ; $22ED (room 6)  - function 1
+        EQUB $66,$23    ; $2366 (room 6)  - function 2
+        EQUB $85,$23    ; $2385 (room 6)  - function 3
+        EQUB $8A,$23    ; $238A (room 7)  - function 1
+        EQUB $EE,$23    ; $23EE (room 7)  - function 2
+        EQUB $01,$24    ; $2401 (room 7)  - function 3
+        EQUB $E8,$25    ; $25E8 (room 8)  - function 1
+        EQUB $E7,$25    ; $25E7 (room 8)  - function 2
+        EQUB $E7,$25    ; $25E7 (room 8)  - function 3
+        EQUB $06,$24    ; $2406 (room 9)  - function 1
+        EQUB $61,$24    ; $2461 (room 9)  - function 2
+        EQUB $86,$24    ; $2486 (room 9)  - function 3
+        EQUB $8B,$24    ; $248B (room 10) - function 1
+        EQUB $1C,$25    ; $251C (room 10) - function 2
+        EQUB $28,$25    ; $2528 (room 10) - function 3
+        EQUB $29,$25    ; $2529 (room 11) - function 1
+        EQUB $D8,$25    ; $25D8 (room 11) - function 2
+        EQUB $28,$25    ; $2528 (room 11) - function 3
+        EQUB $98,$27    ; $2798 (room 12) - function 1
+        EQUB $94,$26    ; $2694 (room 12) - function 2
+        EQUB $28,$25    ; $2528 (room 12) - function 3
+
+;-------------------------------------------------------------------------
+; Data for What?
+;-------------------------------------------------------------------------
+
+.L20F8  ; Room 1 - function 1
+        EQUB $01                ; L001C
+        EQUB $00                ; L000D
+        EQUB $F0                ; L000E
+        EQUB $F1                ; L001E
+        EQUB $1B                ; L001D
         EQUB $34,$10,$BE,$37,$10,$AF,$21,$10
         EQUB $A8,$34,$36,$BE,$34,$3D,$BE,$35
         EQUB $41,$76,$36,$45,$76,$02,$00,$84
@@ -4648,11 +4695,25 @@ L119C = L119A+2
         EQUB $20,$68,$F2,$0C,$0F,$00,$96,$F1
         EQUB $04,$0F,$3C,$60,$F1,$0A,$0F,$30
         EQUB $A8,$F1,$10,$F0,$04,$34,$10,$00
-        EQUB $46,$13,$06,$AC,$20,$0F,$90,$F3
+        EQUB $46,$13,$06,$AC,$20,$0F,$90
+        EQUB $F3                ; Terminator
+
+.L2145  ; Room 1 - function 2
         EQUB $00,$06,$BA,$00,$3E,$73,$00,$4C
-        EQUB $73,$00,$32,$BA,$00,$48,$BA,$FF
+        EQUB $73,$00,$32,$BA,$00,$48,$BA
+        EQUB $FF                ; Terminator
+
+.L2155  ; Room 1 - function 3        
         EQUB $04,$4F,$46,$00,$80,$4F,$8E,$00
-        EQUB $80,$02,$4C,$60,$F2,$18,$01,$00
+        EQUB $80                ; Terminator
+
+.L215E  ; Room 2 - function 1       
+        EQUB $02                ; L001C
+        EQUB $4C                ; L000D
+        EQUB $60                ; L000E
+        EQUB $F2                ; L001E
+        EQUB $18                ; L001D
+        EQUB $01,$00
         EQUB $F0,$F1,$1B,$38,$09,$76,$38,$45
         EQUB $76,$34,$0C,$BE,$34,$3C,$BE,$02
         EQUB $00,$A8,$F2,$0C,$0F,$00,$60,$F1
@@ -4660,12 +4721,28 @@ L119C = L119A+2
         EQUB $60,$F1,$06,$0F,$00,$A8,$F1,$0E
         EQUB $0F,$34,$A8,$F1,$0E,$09,$24,$60
         EQUB $08,$24,$68,$F2,$03,$09,$24,$A8
-        EQUB $08,$24,$B0,$F2,$03,$22,$24,$F0
-        EQUB $F3,$00,$0C,$73,$00,$42,$73,$00
-        EQUB $06,$BA,$00,$18,$BA,$00,$36,$BA
-        EQUB $00,$48,$BA,$FF,$08,$FC,$46,$01
-        EQUB $80,$4F,$46,$00,$80,$FC,$8E,$01
-        EQUB $80,$03,$4C,$AC,$F2,$0C,$01,$00
+        EQUB $08,$24,$B0,$F2,$03,$22    
+        EQUB $24,$F0
+        EQUB $F3                ; Terminator
+
+.L21A6  ; Room 2 - function 2
+        EQUB $00,$0C,$73,$00,$42,$73,$00,$06
+        EQUB $BA,$00,$18,$BA,$00,$36,$BA,$00
+        EQUB $48,$BA
+        EQUB $FF                ; Terminator
+
+.L21B9  ; Room 2 - function 3
+        EQUB $08,$FC,$46,$01,$80,$4F,$46,$00
+        EQUB $80,$FC,$8E,$01
+        EQUB $80                ; Terminator
+
+.L21C6  ; Room 3 - function 1      
+        EQUB $03                ; L001C
+        EQUB $4C                ; L000D
+        EQUB $AC                ; L000E
+        EQUB $F2                ; L001E
+        EQUB $0C                ; L001D
+        EQUB $01,$00
         EQUB $F0,$F1,$1B,$38,$15,$BE,$38,$2B
         EQUB $BE,$38,$0A,$76,$39,$0A,$A8,$38
         EQUB $0A,$BE,$38,$3B,$BE,$39,$3B,$AC
@@ -4680,12 +4757,27 @@ L119C = L119A+2
         EQUB $00,$60,$F1,$08,$0F,$28,$60,$F1
         EQUB $04,$0F,$00,$A8,$F1,$04,$0F,$10
         EQUB $A8,$F1,$06,$0F,$24,$A8,$F1,$08
-        EQUB $3A,$37,$6B,$F3,$00,$00,$46,$01
-        EQUB $80,$00,$28,$73,$00,$28,$BA,$00
+        EQUB $3A,$37,$6B
+        EQUB $F3                ; Terminator
+
+.L2241  ; Room 3 - function 3         
+        EQUB $00,$00,$46,$01
+        EQUB $80                ; Terminator
+
+.L2246  ; Room 3 - function 2 
+        EQUB $00,$28,$73,$00,$28,$BA,$00
         EQUB $30,$BA,$00,$04,$73,$00,$0C,$73
         EQUB $00,$04,$BA,$00,$12,$BA,$00,$18
-        EQUB $BA,$00,$37,$73,$FF,$28,$1C,$2A
-        EQUB $28,$48,$2A,$2D,$2C,$74,$2D,$38
+        EQUB $BA,$00,$37,$73
+        EQUB $FF                ; Terminator
+
+.L2262  ; Room 5 - function 1        
+        EQUB $28                ; L001C
+        EQUB $1C                ; L000D
+        EQUB $2A                ; L000E
+        EQUB $28                ; L001E
+        EQUB $48                ; L001D
+        EQUB $2A,$2D,$2C,$74,$2D,$38
         EQUB $74,$0B,$10,$68,$0A,$10,$70,$F2
         EQUB $0A,$0D,$30,$37,$F2,$16,$0D,$34
         EQUB $37,$F2,$16,$02,$00,$2A,$F2,$20
@@ -4700,9 +4792,24 @@ L119C = L119A+2
         EQUB $F1,$0B,$24,$3C,$22,$F1,$05,$25
         EQUB $1C,$A8,$F1,$03,$26,$40,$A8,$F1
         EQUB $03,$2D,$2C,$20,$F1,$05,$2F,$2F
-        EQUB $E8,$F1,$03,$F3,$00,$1C,$32,$00
-        EQUB $49,$32,$FF,$00,$4F,$CE,$00,$80
-        EQUB $2D,$41,$20,$F1,$02,$0D,$40,$34
+        EQUB $E8,$F1,$03
+        EQUB $F3                ; Terminator
+
+.L22E1  ; Room 5 - function 2      
+        EQUB $00,$1C,$32,$00,$49,$32
+        EQUB $FF                ; Terminator
+
+.L22E8  ; Room 5 - function 3      
+        EQUB $00,$4F,$CE,$00
+        EQUB $80                ; Terminator
+
+.L22ED  ; Room 6 - function 1
+        EQUB $2D                ; L001C
+        EQUD $41                ; L000D
+        EQUD $20                ; L000E
+        EQUD $F1                ; L001E
+        EQUD $02                ; L001D
+        EQUD $0D,$40,$34
         EQUB $F2,$14,$0D,$44,$34,$F2,$14,$28
         EQUB $35,$6A,$28,$1D,$B2,$28,$31,$B2
         EQUB $02,$00,$28,$F2,$16,$06,$34,$28
@@ -4717,12 +4824,26 @@ L119C = L119A+2
         EQUB $00,$A8,$F1,$0A,$24,$30,$A8,$F1
         EQUB $04,$24,$48,$A8,$F1,$02,$24,$00
         EQUB $F0,$F1,$10,$24,$48,$F0,$F1,$02
-        EQUB $F3,$00,$04,$2A,$00,$0C,$2A,$00
+        EQUB $F3                ; Terminator
+
+.L2366  ; Room 6 - function 2      
+        EQUB $00,$04,$2A,$00,$0C,$2A,$00
         EQUB $31,$2A,$00,$38,$2A,$00,$49,$2A
         EQUB $00,$35,$72,$00,$04,$BA,$00,$1D
-        EQUB $BA,$00,$24,$BA,$00,$31,$BA,$FF
-        EQUB $00,$24,$1A,$03,$82,$34,$1A,$AE
-        EQUB $37,$1A,$9F,$34,$2E,$AE,$37,$2E
+        EQUB $BA,$00,$24,$BA,$00,$31,$BA
+        EQUB $FF                ; Terminator
+
+.L2385  ; Room 6 - function 3
+        EQUB $00,$24,$1A,$03
+        EQUB $82                ; Terminator
+
+.L238A  ; Room 7 - function 1        
+        EQUB $34                ; L001C
+        EQUB $1A                ; L000D
+        EQUB $AE                ; L000E
+        EQUB $37                ; L001E
+        EQUB $1A                ; L001D
+        EQUB $9F,$34,$2E,$AE,$37,$2E
         EQUB $9F,$38,$1C,$56,$39,$1C,$44,$38
         EQUB $32,$56,$39,$32,$44,$03,$00,$20
         EQUB $F2,$12,$02,$00,$88,$F2,$0F,$02
@@ -4734,10 +4855,25 @@ L119C = L119A+2
         EQUB $30,$F1,$10,$13,$18,$46,$13,$20
         EQUB $46,$13,$36,$46,$13,$2E,$46,$30
         EQUB $24,$C8,$30,$10,$C8,$30,$38,$C8
-        EQUB $F3,$00,$16,$AC,$00,$38,$AC,$00
+        EQUB $F3                ; Terminator
+
+.L23EE  ; Room 7 - function 2        
+        EQUB $00,$16,$AC,$00,$38,$AC,$00
         EQUB $18,$54,$00,$20,$54,$00,$36,$54
-        EQUB $00,$2E,$54,$FF,$00,$47,$C6,$00
-        EQUB $80,$30,$10,$40,$30,$38,$40,$30
+        EQUB $00,$2E,$54
+        EQUB $FF                ; Terminator
+
+.L2401  ; Room 7 - function 3        
+        EQUB $00,$47,$C6,$00
+        EQUB $80                ; Terminator
+
+.L2406  ; Room 9 - function 1      
+        EQUB $30                ; L001C
+        EQUB $10                ; L000D
+        EQUB $40                ; L000E
+        EQUB $30                ; L001E
+        EQUB $38                ; L001D
+        EQUB $40,$30
         EQUB $04,$88,$30,$1C,$88,$F1,$02,$02
         EQUB $00,$20,$F2,$22,$03,$40,$20,$F2
         EQUB $0B,$02,$4C,$20,$F2,$0B,$28,$4C
@@ -4748,13 +4884,28 @@ L119C = L119A+2
         EQUB $0E,$E0,$F1,$38,$22,$46,$E0,$F1
         EQUB $02,$28,$08,$62,$28,$0B,$62,$28
         EQUB $18,$62,$28,$1B,$62,$28,$2C,$62
-        EQUB $28,$2F,$62,$F3,$00,$18,$20,$00
+        EQUB $28,$2F,$62
+        EQUB $F3                ; Terminator
+
+.L2461  ; Room 9 - function 2        
+        EQUB $00,$18,$20,$00
         EQUB $1C,$20,$00,$36,$20,$00,$3A,$20
         EQUB $00,$08,$6A,$00,$0C,$6A,$00,$18
         EQUB $6A,$00,$1C,$6A,$00,$2C,$6A,$00
         EQUB $30,$6A,$00,$04,$AA,$00,$08,$AA
-        EQUB $FF,$00,$0C,$24,$03,$82,$28,$00
-        EQUB $60,$F2,$09,$29,$00,$A8,$F2,$09
+        EQUB $FF                ; Terminator
+        
+.L2486  ; Room 9 - function 3        
+        EQUB $00,$0C,$24,$03
+        EQUB $82                ; Terminator
+
+.L248B  ; Room 10 - function 1      
+        EQUB $28                ; L001C
+        EQUB $00                ; L000D
+        EQUB $60                ; L000E
+        EQUB $F2                ; L001E
+        EQUB $09                ; L001D
+        EQUB $29,$00,$A8,$F2,$09
         EQUB $0D,$04,$60,$F2,$11,$28,$08,$60
         EQUB $F2,$08,$2D,$08,$A0,$28,$1C,$20
         EQUB $F2,$0B,$2A,$1C,$78,$F2,$06,$28
@@ -4771,10 +4922,23 @@ L119C = L119A+2
         EQUB $F1,$02,$24,$18,$A8,$F1,$03,$24
         EQUB $2C,$A8,$F1,$03,$2F,$04,$E8,$2F
         EQUB $14,$E8,$2F,$24,$E8,$2F,$29,$E8
-        EQUB $2F,$48,$E8,$2F,$38,$E8,$F3,$00
-        EQUB $0C,$70,$00,$20,$30,$00,$2D,$30
-        EQUB $00,$41,$70,$FF,$28,$00,$68,$F2
-        EQUB $08,$0D,$04,$80,$F2,$05,$0D,$08
+        EQUB $2F,$48,$E8,$2F,$38,$E8
+        EQUB $F3                ; Terminator
+        
+.L251C  ; Room 10 - function 2        
+        EQUB $00,$0C,$70,$00,$20,$30,$00,$2D
+        EQUB $30,$00,$41,$70
+
+.L2528  ; Room 4, 10, 11 and 12 - function 3      
+        EQUB $FF                ; Terminator
+
+.L2529  ; Room 11 - function 1      
+        EQUB $28                ; L001C
+        EQUB $00                ; L000D
+        EQUB $68                ; L000E
+        EQUB $F2                ; L001E
+        EQUB $08                ; L001D
+        EQUB $0D,$04,$80,$F2,$05,$0D,$08
         EQUB $70,$F2,$04,$0D,$0C,$60,$F2,$04
         EQUB $0D,$10,$50,$F2,$04,$0D,$14,$50
         EQUB $F2,$02,$0D,$18,$50,$F2,$02,$24
@@ -4795,15 +4959,36 @@ L119C = L119A+2
         EQUB $3C,$94,$F2,$0D,$24,$28,$A8,$F1
         EQUB $08,$2F,$38,$90,$2F,$3C,$80,$2D
         EQUB $44,$70,$2E,$48,$20,$28,$34,$B2
-        EQUB $F1,$04,$F3,$00,$36,$BA,$00,$39
-        EQUB $BA,$00,$18,$7C,$00,$41,$20,$00
-        EQUB $40,$BA,$FF,$01,$04,$60,$F1,$03
+        EQUB $F1,$04
+        EQUB $F3                ; Terminator
+        
+.L25D8  ; Room 11 - function 2
+        EQUB $00,$36,$BA,$00,$39,$BA,$00,$18
+        EQUB $7C,$00,$41,$20,$00,$40,$BA
+
+.L25E7  ; Room 8 - functions 2 and 3    
+        EQUB $FF                ; Terminator
+
+.L25E8  ; Room 8 - function 1  
+        EQUB $01                ; L001C
+        EQUB $04                ; L000D
+        EQUB $60                ; L000E
+        EQUB $F1                ; L001E
+        EQUB $03                ; L001D
         EQUB $27,$0C,$60,$F1,$38,$27,$0C,$A8
         EQUB $F1,$38,$27,$04,$F0,$F1,$40,$01
         EQUB $44,$A8,$F1,$04,$02,$00,$20,$F2
         EQUB $23,$01,$FE,$F0,$F1,$02,$02,$4C
         EQUB $20,$F2,$23,$01,$4C,$F0,$F1,$02
-        EQUB $F3,$01,$02,$B8,$F1,$02,$02,$00
+        EQUB $F3                ; Terminator
+        
+.L2616  ; Room 4 - function 1        
+        EQUB $01                ; L001C
+        EQUB $02                ; L000D
+        EQUB $B8                ; L000E
+        EQUB $F1                ; L001E
+        EQUB $02                ; L001D
+        EQUB $02,$00
         EQUB $20,$F2,$13,$02,$00,$A4,$F2,$05
         EQUB $02,$40,$4A,$F2,$0B,$02,$40,$A0
         EQUB $F2,$0E,$02,$4C,$20,$F2,$23,$01
@@ -4818,11 +5003,20 @@ L119C = L119A+2
         EQUB $04,$82,$F1,$0E,$0C,$48,$60,$0C
         EQUB $48,$A8,$0C,$04,$2A,$F1,$12,$08
         EQUB $48,$32,$0C,$04,$48,$F2,$02,$22
-        EQUB $04,$F0,$F3,$00,$44,$BC,$FF,$00
+        EQUB $04,$F0
+        EQUB $F3                ; Terminator
+
+.L2690  ; Room 4 - function 2   
+        EQUB $00,$44,$BC
+        EQUB $FF                ; Terminator
+
+.L2694  ; Room 12 - function 2        
+        EQUB $00
         EQUB $14,$BA,$00,$1C,$B2,$FF,$1B,$55
         EQUB $03,$70,$FF,$32,$09,$36,$3F,$B5
         EQUB $FF,$33,$19,$21,$30,$CD,$01,$33
-        EQUB $2E,$01,$1A,$E5,$FF,$33,$FF
+        EQUB $2E,$01,$1A,$E5,$FF,$33
+        EQUB $FF                ; Terminator
 
 .L26B4
         EQUB $C4
@@ -4866,7 +5060,15 @@ L119C = L119A+2
 
 .L278F
         EQUB $01,$33,$12,$38,$1B,$74,$01,$31
-        EQUB $FF,$02,$4C,$20,$F2,$23,$02,$00
+        EQUB $FF
+
+.L2798  ; room 12 - function 1
+        EQUB $02                ; L001C
+        EQUB $4C                ; L000D
+        EQUB $20                ; L000E
+        EQUB $F2                ; L001E
+        EQUB $23                ; L001D
+        EQUB $02,$00
         EQUB $20,$F2,$23,$02,$18,$84,$F2,$12
         EQUB $2D,$1C,$34,$0D,$1C,$48,$F2,$04
         EQUB $0D,$20,$48,$F2,$04,$2D,$20,$34
@@ -4882,13 +5084,18 @@ L119C = L119A+2
         EQUB $24,$14,$80,$F1,$0E,$25,$40,$80
         EQUB $F1,$02,$24,$00,$F0,$F1,$14,$0B
         EQUB $04,$80,$0A,$04,$88,$F2,$08,$28
-        EQUB $14,$B2,$28,$1C,$AA,$F3,$61,$4D
+        EQUB $14,$B2,$28,$1C,$AA
+        EQUB $F3                ; Terminator
+        
+        EQUB $61,$4D
         EQUB $02,$61,$4D,$02,$61,$4D,$02,$61
         EQUB $4D,$03,$59,$45,$05,$59,$45,$05
         EQUB $4D,$39,$05,$4D,$39,$05,$59,$45
         EQUB $05,$FF,$75,$35,$04,$6D,$31,$04
         EQUB $65,$29,$04,$61,$21,$09,$FF,$00
-        EQUB $00,$00,$00,$00,$27,$32,$03,$0A
+        EQUB $00,$00,$00,$00
+        
+        EQUB $27,$32,$03,$0A
         EQUB $00,$45,$32,$04,$06,$02,$45,$32
         EQUB $04,$06,$08,$45,$32,$04,$06,$0A
         EQUB $45,$32,$04,$06,$0C,$45,$32,$04
